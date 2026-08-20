@@ -37,3 +37,7 @@ Este comando corre `scripts/update_data.sh`, que:
 1. Lista los archivos que hay en `data/`.
 2. Pregunta, uno por uno, si se quiere versionar cada archivo con DVC (`dvc add`).
 3. Al final, pregunta si se quiere hacer `dvc push` de todo lo versionado en esa corrida.
+
+## Exploración
+
+Ver [exploration/README.md](exploration/README.md) para cómo importar los datos y correr notebooks de exploración.
