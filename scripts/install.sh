@@ -11,3 +11,4 @@ source "$VENV_DIR/bin/activate"
 
 pip install --upgrade pip
 pip install "dvc[s3]"
+pip install -r exploration/requirements.txt
