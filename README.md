@@ -17,3 +17,23 @@ source .venv/bin/activate
 ```
 
 Repite este `source .venv/bin/activate` cada vez que abras una terminal nueva y quieras seguir usando el proyecto. Para salir del entorno virtual: `deactivate`.
+
+## Actualizar datos
+
+Cuando se agregue nueva data que deba ser versionada como datos (archivos grandes), debe:
+
+1. Incluirse dentro de la carpeta `data/`.
+2. Versionarse con `dvc add <archivo>`.
+3. Subirse al remote con `dvc push`.
+
+Esto se puede hacer automáticamente con el siguiente comando de Makefile:
+
+```bash
+make update-data
+```
+
+Este comando corre `scripts/update_data.sh`, que:
+
+1. Lista los archivos que hay en `data/`.
+2. Pregunta, uno por uno, si se quiere versionar cada archivo con DVC (`dvc add`).
+3. Al final, pregunta si se quiere hacer `dvc push` de todo lo versionado en esa corrida.
