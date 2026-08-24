@@ -41,3 +41,7 @@ Este comando corre `scripts/update_data.sh`, que:
 ## Exploración
 
 Ver [exploration/README.md](exploration/README.md) para cómo importar los datos y correr notebooks de exploración.
+
+## Datos y licencia
+
+El dataset `data/airlines.csv` proviene de [OpenML - Airlines dataset](https://www.openml.org/search?type=data&sort=runs&id=1169&status=active) y está distribuido bajo licencia **ODC-PDDL** (Open Data Commons Public Domain Dedication and License v1.0), según lo verificado en [datahub.io/core/openml-datasets/data/airlines](https://datahub.io/core/openml-datasets/data/airlines). Esta licencia permite el uso, copia, modificación y distribución de los datos sin restricciones.
