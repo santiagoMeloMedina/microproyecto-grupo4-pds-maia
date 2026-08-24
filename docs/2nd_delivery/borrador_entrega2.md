@@ -1,13 +1,10 @@
 # Borrador — Hallazgos posteriores a la Entrega 1
 
 **Micro-proyecto · Proyecto de Desarrollo de Soluciones · MAIA**
-**Autora del análisis:** Katherin Rodríguez
 
-> **Qué es este documento.** Un análisis exploratorio que se terminó después de enviar la Entrega
-> 1 y que no alcanzó a incorporarse al reporte. No modifica lo entregado
-> ([`docs/1st_delivery/reporte_entrega1.md`](../1st_delivery/reporte_entrega1.md), que se conserva
-> como registro). Su propósito es servir de insumo para la Entrega 2, porque **tres de sus
-> hallazgos cambian decisiones de modelado que quedaron escritas en la Entrega 1**.
+
+> **Qué es este documento.** Un análisis exploratorio posterior, su propósito es servir de insumo para la Entrega 2, porque **tres de sus
+> hallazgos cambian decisiones de modelado**.
 >
 > Notebook reproducible: [`exploration/katherin-airlines.ipynb`](../../exploration/katherin-airlines.ipynb).
 
@@ -189,18 +186,3 @@ evaluarse su aporte incremental sobre `Airline` para no introducir colinealidad.
     que un modelo entrenado una vez pierde vigencia.
 
 ---
-
-## 4. Pendientes de repositorio
-
-Detectados al revisar el estado del repositorio, independientes del análisis:
-
-1. Los notebooks de exploración de Edisson y Pilar siguen en ramas sin fusionar; en `main` solo
-   está el de Santiago. La nota es individual y se evalúa por commits, así que conviene integrarlos.
-2. La rama `feature/pilar-airlines-eda` salió de un `main` anterior: su diff elimina
-   `exploration/glosario_tecnico.md` y la sección de licencia del README. Requiere *rebase* antes
-   del *merge*.
-3. El notebook de Edisson concluye que el dataset no tiene duplicados, pero su propia celda calcula
-   216.618. Conviene corregirlo antes de integrarlo, ya que contradice §4.4 de la Entrega 1.
-4. La Figura 1 del reporte entregado (mockup del dashboard) no está versionada en
-   `docs/1st_delivery/images/`.
-5. `exploration/requirements.txt` en `main` no incluye `seaborn`, que el notebook de Pilar importa.
