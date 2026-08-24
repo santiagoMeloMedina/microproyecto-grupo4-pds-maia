@@ -3,3 +3,4 @@
 data/*
 !data/*.dvc
 !data/.gitignore
+.DS_Store
