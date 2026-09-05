@@ -1,0 +1,19 @@
+# Dependencias del notebook de modelado. Se instalan aparte de
+# exploration/requirements.txt para no imponer MLflow y XGBoost a quien solo
+# quiera correr los notebooks de exploración.
+#
+#   pip install -r modeling/requirements.txt
+#
+# Las versiones coinciden con las de api/requirements.txt: el pipeline se
+# serializa con pickle, así que quien entrena y quien sirve deben usar las
+# mismas versiones de scikit-learn y xgboost.
+pandas==2.3.3
+numpy==2.4.6
+scikit-learn==1.9.0
+scipy==1.17.1
+xgboost==3.2.0
+mlflow==3.15.2
+joblib==1.5.3
+pyarrow==25.0.1
+matplotlib
+ipykernel

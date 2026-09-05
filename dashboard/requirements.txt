@@ -1,0 +1,17 @@
+# Dependencias del tablero (dashboard/app.py, Dash).
+#
+# En esta entrega el tablero carga el modelo directamente, por eso necesita
+# scikit-learn y xgboost: el pipeline se deserializa con pickle y las versiones
+# deben coincidir con las que lo entrenaron o la carga falla.
+#
+# En la Entrega 3, cuando el tablero consuma la API, estas tres dependencias
+# desaparecen de aqui y quedan solo del lado del servicio.
+dash==4.4.1
+plotly==7.0.0
+pandas==2.3.3
+numpy==2.4.6
+scikit-learn==1.9.0
+scipy==1.17.1
+xgboost==3.2.0
+joblib==1.5.3
+pyarrow==25.0.1
