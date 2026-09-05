@@ -1,0 +1,58 @@
+{
+  "familia": "xgboost",
+  "calibrado": false,
+  "umbral": 0.5529,
+  "banda_alta": 0.6891,
+  "umbral_f1": 0.27,
+  "criterio_umbral": "presupuesto de refuerzo del 20% de las franjas",
+  "campos_entrada": [
+    "Airline",
+    "AirportFrom",
+    "AirportTo",
+    "DayOfWeek",
+    "Time",
+    "Length"
+  ],
+  "ventana_entrenamiento": "dias 0-24 del dataset",
+  "metricas_prueba": {
+    "roc_auc": 0.6974,
+    "pr_auc": 0.7309,
+    "brier": 0.2292,
+    "log_loss": 0.6495,
+    "accuracy": 0.5935,
+    "precision": 0.7993,
+    "recall": 0.3139,
+    "f1": 0.4507,
+    "umbral": 0.5529,
+    "tasa_predicha": 0.2087,
+    "prob_media": 0.4277
+  },
+  "punto_operacion": {
+    "Umbral": 0.5529,
+    "% franjas reforzadas": 0.2087,
+    "Precision": 0.7993,
+    "Recall": 0.3139,
+    "F1": 0.4507,
+    "Lift": 1.5041
+  },
+  "lineas_base": {
+    "base_clase_mayoritaria": {
+      "roc_auc": 0.5,
+      "accuracy": 0.5314,
+      "f1": 0.694
+    },
+    "base_memoria_itinerario": {
+      "roc_auc": 0.6043,
+      "accuracy": 0.5957,
+      "f1": 0.6603
+    },
+    "base_aerolinea_franja": {
+      "roc_auc": 0.6763,
+      "accuracy": 0.5946,
+      "f1": 0.6933
+    }
+  },
+  "tasa_base_entrenamiento": 0.42405797436995707,
+  "tasa_base_prueba": 0.5313965607087024,
+  "run_id_mlflow": "1b6f34b8779847409c222c958fb23bf8"
+}

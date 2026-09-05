@@ -65,11 +65,50 @@ Los reportes y soportes de cada entrega viven en `docs/`:
 
 - [docs/1st_delivery/reporte_entrega1.md](docs/1st_delivery/reporte_entrega1.md) — reporte entregado en la Entrega 1.
 - [docs/1st_delivery/repository_configuration.md](docs/1st_delivery/repository_configuration.md) — evidencia de la creación del repositorio GitHub, el bucket S3 y la configuración de DVC, con capturas en `docs/1st_delivery/images/`.
-- [docs/2nd_delivery/borrador_entrega2.md](docs/2nd_delivery/borrador_entrega2.md) — borrador con hallazgos posteriores a la Entrega 1, insumo para la Entrega 2.
+- [docs/2nd_delivery/reporte_entrega2.md](docs/2nd_delivery/reporte_entrega2.md) — reporte de la Entrega 2: modelos, evaluación y tablero.
+- [docs/2nd_delivery/reporte_trabajo_equipo.md](docs/2nd_delivery/reporte_trabajo_equipo.md) — reporte de trabajo en equipo de la Entrega 2.
+- [docs/2nd_delivery/borrador_entrega2.md](docs/2nd_delivery/borrador_entrega2.md) — hallazgos de EDA posteriores a la Entrega 1.
+- [docs/2nd_delivery/mlflow_ec2.md](docs/2nd_delivery/mlflow_ec2.md) — montaje del servidor de MLflow en EC2 y capturas requeridas.
+- [docs/2nd_delivery/ejecutar_en_colab.md](docs/2nd_delivery/ejecutar_en_colab.md) — cómo correr el notebook de modelado en Google Colab con GPU.
+- [docs/3rd_delivery/borrador_entrega3.md](docs/3rd_delivery/borrador_entrega3.md) — borrador de la Entrega 3: API, contenedores y pendientes.
 
 ## Exploración
 
 Ver [exploration/README.md](exploration/README.md) para cómo importar los datos y correr notebooks de exploración.
+
+## Modelado y tablero
+
+El código de preparación de datos vive en [airlines_ml/](airlines_ml/), que comparten el notebook de
+entrenamiento y el tablero. Así el modelo recibe al servir exactamente las mismas columnas con las
+que se entrenó.
+
+```
+airlines_ml/     preparación de datos, features, modelos y líneas base
+modeling/        notebook de entrenamiento y experimentos (MLflow)
+dashboard/       tablero Dash
+```
+
+### 1. Entrenar
+
+```bash
+pip install -r modeling/requirements.txt
+jupyter lab modeling/katherin-modelos-entrega2.ipynb
+```
+
+Ejecuta 90 experimentos, los registra en MLflow y produce `models/modelo_ganador.joblib`,
+`models/metadata.json` y `dashboard/data/vuelos.parquet`. Para consolidar los experimentos en el
+servidor del equipo, exporta `MLFLOW_TRACKING_URI` antes de abrir el notebook — ver
+[docs/2nd_delivery/mlflow_ec2.md](docs/2nd_delivery/mlflow_ec2.md).
+
+### 2. Levantar el tablero
+
+```bash
+pip install -r dashboard/requirements.txt
+python dashboard/app.py
+```
+
+Queda en http://localhost:8050. Requiere haber ejecutado antes el notebook, que es el que genera el
+modelo y el parquet.
 
 ## Datos y licencia
 

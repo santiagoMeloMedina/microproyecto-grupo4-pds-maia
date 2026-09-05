@@ -3,4 +3,25 @@
 data/*
 !data/*.dvc
 !data/.gitignore
+
+# Artefactos derivados: se reconstruyen corriendo
+# modeling/katherin-modelos-entrega2.ipynb. Para la Entrega 3 conviene
+# versionarlos con DVC
+models/*
+!models/.gitkeep
+!models/metadata.json
+dashboard/data/
+
+# Configuracion local: cada quien apunta a su propio servidor de MLflow.
+# La plantilla versionada es .env.example
+.env
+
+# Seguimiento local de MLflow
+mlflow.db
+mlartifacts/
+mlruns/
+
+__pycache__/
+*.pyc
+modeling/_humo.ipynb
 .DS_Store
