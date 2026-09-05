@@ -1,0 +1,26 @@
+# Cada elemento de la lista es un escenario. "name" es opcional y se usa
+# como nombre de la corrida en MLflow. Cualquier campo que no se indique
+# toma el valor por defecto (o el pasado por CLI): data_path,
+# experiment_name, test_size, random_state, n_estimators, learning_rate,
+# num_leaves.
+
+- name: baseline
+  n_estimators: 100
+  learning_rate: 0.1
+  num_leaves: 31
+
+- name: mas_arboles
+  n_estimators: 300
+  learning_rate: 0.05
+  num_leaves: 31
+
+- name: arboles_mas_grandes
+  n_estimators: 200
+  learning_rate: 0.1
+  num_leaves: 63
+
+- name: test_size_mayor
+  n_estimators: 100
+  learning_rate: 0.1
+  num_leaves: 31
+  test_size: 0.3
