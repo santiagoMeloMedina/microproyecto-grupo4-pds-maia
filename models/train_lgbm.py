@@ -9,8 +9,8 @@ import yaml
 from lightgbm import LGBMClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 
-TARGET_COLUMN = "Delay"
-CATEGORICAL_COLUMNS = ["Airline", "AirportFrom", "AirportTo", "DayOfWeek"]
+from features import CATEGORICAL_COLUMNS, TARGET_COLUMN, prepare_dataset
+
 SCENARIO_KEYS = [
     "data_path",
     "experiment_name",
@@ -19,6 +19,11 @@ SCENARIO_KEYS = [
     "n_estimators",
     "learning_rate",
     "num_leaves",
+    "max_depth",
+    "min_child_samples",
+    "reg_alpha",
+    "reg_lambda",
+    "is_unbalance",
 ]
 
 def parse_args() -> argparse.Namespace:
@@ -27,13 +32,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--experiment-name", default="airlines-delay-lgbm")
     parser.add_argument("--test-size", type=float, default=0.2)
     parser.add_argument("--random-state", type=int, default=42)
-    parser.add_argument("--n-estimators", type=int, default=100)
-    parser.add_argument("--learning-rate", type=float, default=0.1)
-    parser.add_argument("--num-leaves", type=int, default=31)
+    parser.add_argument("--n-estimators", type=int, default=300)
+    parser.add_argument("--learning-rate", type=float, default=0.05)
+    parser.add_argument("--num-leaves", type=int, default=63)
+    parser.add_argument("--max-depth", type=int, default=8, help="-1 = sin límite (default de LightGBM)")
+    parser.add_argument("--min-child-samples", type=int, default=50)
+    parser.add_argument("--reg-alpha", type=float, default=0.5)
+    parser.add_argument("--reg-lambda", type=float, default=0.5)
+    parser.add_argument(
+        "--is-unbalance",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Ajusta automáticamente el peso de las clases para compensar el desbalance de Delay "
+        "(default: activado; usar --no-is-unbalance para desactivarlo).",
+    )
     parser.add_argument(
         "--scenarios-file",
         default=None,
-        help="Archivo YAML con una lista de escenarios a correr (ver models/scenarios.example.yaml).",
+        help="Archivo YAML con una lista de escenarios a correr.",
     )
     return parser.parse_args()
 
@@ -46,23 +62,13 @@ def load_scenarios(scenarios_file: str) -> list[dict]:
     return scenarios
 
 
-def load_data(data_path: str) -> pd.DataFrame:
-    df = pd.read_csv(data_path)
-    df.columns = df.columns.str.strip()
-    for column in df.select_dtypes(include="object").columns:
-        df[column] = df[column].str.strip()
-    for column in CATEGORICAL_COLUMNS:
-        df[column] = df[column].astype("category")
-    return df
-
-
 def split_time_ordered(df: pd.DataFrame, test_size: float) -> tuple[pd.DataFrame, pd.DataFrame]:
     split_idx = int(len(df) * (1 - test_size))
     return df.iloc[:split_idx], df.iloc[split_idx:]
 
 
 def run_scenario(params: dict, run_name: str | None = None) -> dict:
-    df = load_data(params["data_path"])
+    df = prepare_dataset(params["data_path"])
     train_df, test_df = split_time_ordered(df, params["test_size"])
 
     X_train = train_df.drop(columns=[TARGET_COLUMN])
@@ -74,6 +80,11 @@ def run_scenario(params: dict, run_name: str | None = None) -> dict:
         "n_estimators": params["n_estimators"],
         "learning_rate": params["learning_rate"],
         "num_leaves": params["num_leaves"],
+        "max_depth": params["max_depth"],
+        "min_child_samples": params["min_child_samples"],
+        "reg_alpha": params["reg_alpha"],
+        "reg_lambda": params["reg_lambda"],
+        "is_unbalance": params["is_unbalance"],
         "random_state": params["random_state"],
     }
 

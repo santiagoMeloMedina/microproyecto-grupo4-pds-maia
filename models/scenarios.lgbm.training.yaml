@@ -2,25 +2,41 @@
 # como nombre de la corrida en MLflow. Cualquier campo que no se indique
 # toma el valor por defecto (o el pasado por CLI): data_path,
 # experiment_name, test_size, random_state, n_estimators, learning_rate,
-# num_leaves.
+# num_leaves, max_depth, min_child_samples, reg_alpha, reg_lambda, is_unbalance.
 
 - name: baseline
-  n_estimators: 100
-  learning_rate: 0.1
-  num_leaves: 31
-
-- name: mas_arboles
   n_estimators: 300
   learning_rate: 0.05
-  num_leaves: 31
+  num_leaves: 63
+  max_depth: 8
+  min_child_samples: 50
+  reg_alpha: 0.5
+  reg_lambda: 0.5
+
+- name: mas_arboles
+  n_estimators: 500
 
 - name: arboles_mas_grandes
-  n_estimators: 200
-  learning_rate: 0.1
-  num_leaves: 63
+  num_leaves: 127
 
 - name: test_size_mayor
+  test_size: 0.3
+
+- name: learning_rate_bajo
+  learning_rate: 0.03
+  n_estimators: 500
+
+- name: learning_rate_alto
+  learning_rate: 0.1
+
+- name: sin_regularizacion
   n_estimators: 100
   learning_rate: 0.1
   num_leaves: 31
-  test_size: 0.3
+  max_depth: -1
+  min_child_samples: 20
+  reg_alpha: 0.0
+  reg_lambda: 0.0
+
+- name: sin_balanceo
+  is_unbalance: false

@@ -6,3 +6,4 @@ data/*
 .DS_Store
 mlruns/
 models/scenarios.local.yaml
+__pycache__/
