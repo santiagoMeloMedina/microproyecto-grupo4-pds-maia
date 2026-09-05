@@ -24,3 +24,4 @@ mlruns/
 __pycache__/
 *.pyc
 modeling/_humo.ipynb
+.DS_Store
