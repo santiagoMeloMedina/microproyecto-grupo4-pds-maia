@@ -1,21 +1,3 @@
-"""Entrena un LGBMClassifier sobre el dataset de airlines y registra la corrida en MLflow.
-
-Uso:
-    python models/train_lgbm.py
-    python models/train_lgbm.py --data-path data/airlines.csv --n-estimators 200
-
-Para correr varios escenarios en una sola ejecución, define un archivo YAML
-(ver scenarios.example.yaml) y pásalo con --scenarios-file:
-
-    python models/train_lgbm.py --scenarios-file models/scenarios.yaml
-
-Cada escenario del archivo puede sobreescribir cualquiera de los argumentos
-de línea de comandos (n_estimators, learning_rate, num_leaves, test_size,
-data_path, experiment_name, random_state). Lo que no se especifique en el
-escenario toma el valor por defecto (o el pasado por CLI). Cada escenario se
-registra como una corrida (run) separada en MLflow.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -38,7 +20,6 @@ SCENARIO_KEYS = [
     "learning_rate",
     "num_leaves",
 ]
-
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -76,13 +57,6 @@ def load_data(data_path: str) -> pd.DataFrame:
 
 
 def split_time_ordered(df: pd.DataFrame, test_size: float) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Divide el dataset respetando el orden de las filas (proxy de tiempo).
-
-    Las filas están agrupadas en bloques consecutivos por día, así que un split
-    aleatorio dejaría días futuros en train y evaluaría con días ya "vistos"
-    indirectamente. En su lugar, se entrena con el primer tramo y se evalúa
-    con el tramo final, como ocurriría en producción.
-    """
     split_idx = int(len(df) * (1 - test_size))
     return df.iloc[:split_idx], df.iloc[split_idx:]
 
