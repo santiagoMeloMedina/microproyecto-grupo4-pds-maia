@@ -1,0 +1,40 @@
+.factor-impact-chart {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.factor-impact-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.factor-impact-label {
+  color: var(--text);
+}
+
+.factor-impact-track {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.factor-impact-bar {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 5px;
+}
+
+.factor-impact-value {
+  text-align: right;
+  color: var(--text-h);
+  font-weight: 600;
+}

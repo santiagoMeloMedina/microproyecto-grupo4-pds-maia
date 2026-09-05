@@ -1,0 +1,22 @@
+.risk-gauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.risk-gauge-value {
+  font-size: 22px;
+  font-weight: 700;
+  fill: var(--text-h);
+}
+
+.risk-gauge-caption {
+  font-size: 11px;
+  fill: var(--text);
+}
+
+.risk-gauge-label {
+  font-weight: 600;
+  margin: 0;
+}

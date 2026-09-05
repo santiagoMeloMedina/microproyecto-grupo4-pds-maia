@@ -1,0 +1,85 @@
+.prediction-page {
+  min-height: 100svh;
+  padding: 24px;
+}
+
+.prediction-page-header {
+  margin-bottom: 24px;
+  max-width: 640px;
+}
+
+.prediction-page-header h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.prediction-page-header p {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.prediction-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .prediction-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.prediction-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.prediction-panel h2 {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.prediction-empty {
+  color: var(--text);
+  font-size: 14px;
+  margin: 0;
+}
+
+.prediction-disclaimer {
+  font-size: 12px;
+  color: var(--text);
+  background: var(--accent-bg);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 0 0 16px;
+}
+
+.prediction-result-top {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.prediction-result-threshold {
+  flex: 1;
+  min-width: 220px;
+}
+
+.prediction-result-threshold h3 {
+  font-size: 13px;
+  margin: 0 0 8px;
+  color: var(--text-h);
+}
+
+.prediction-result-factors h3 {
+  font-size: 13px;
+  margin: 0 0 12px;
+  color: var(--text-h);
+}

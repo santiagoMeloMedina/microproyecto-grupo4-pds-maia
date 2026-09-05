@@ -1,18 +1,29 @@
-.dashboard {
+.app-shell {
   min-height: 100svh;
-  padding: 24px;
 }
 
-.dashboard-header {
-  margin-bottom: 24px;
+.app-nav {
+  display: flex;
+  gap: 4px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
 }
 
-.dashboard-header h1 {
-  font-size: 28px;
+.app-nav-link {
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+.app-nav-link:hover {
+  background: var(--accent-bg);
+}
+
+.app-nav-link.active {
+  background: var(--accent-bg);
+  color: var(--accent);
 }

@@ -1,0 +1,49 @@
+.prediction-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.prediction-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prediction-field label {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.prediction-field select,
+.prediction-field input {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-h);
+  font-size: 14px;
+}
+
+.prediction-field-error {
+  margin: 0;
+  color: #e03131;
+  font-size: 12px;
+}
+
+.prediction-submit {
+  margin-top: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.prediction-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
