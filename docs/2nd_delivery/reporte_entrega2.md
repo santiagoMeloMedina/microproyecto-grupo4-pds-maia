@@ -432,6 +432,3 @@ disco.*
 *Figura A7. Vista de gráficas de MLflow comparando métricas entre corridas. Los paneles
 `delta_logistica`, `delta_random_forest` y `delta_suavizado_*` corresponden al experimento sobre
 `Flight` de la sección 4: todos negativos, que es el resultado que llevó a descartar la variable.*
-
-> **Pendiente:** insertar las capturas en `docs/2nd_delivery/images/` con esos nombres. El checklist
-> de qué debe ser visible en cada una está en [`mlflow_ec2.md` §7](mlflow_ec2.md).

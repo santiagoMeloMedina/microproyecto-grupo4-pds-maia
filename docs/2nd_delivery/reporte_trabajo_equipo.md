@@ -21,9 +21,7 @@
 ## Organización del trabajo
 
 El equipo mantiene una rama por integrante e integra a `main` mediante *pull request* con revisión
-de al menos un compañero. Para esta entrega el trabajo se separó en dos ramas:
-`feature/katherin-airlines-eda`, con la exploración, y `feature/katherin-modelos-entrega2`, con
-modelos y tablero.
+de al menos un compañero.
 
 ## Cómo se atendió la retroalimentación de la Entrega 1
 
