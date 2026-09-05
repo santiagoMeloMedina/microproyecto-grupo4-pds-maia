@@ -290,6 +290,11 @@ pip install -r dashboard/requirements.txt
 python dashboard/app.py        # http://localhost:8050
 ```
 
+![Panel del tablero](images/tablero_01_panel.png)
+
+*Figura 4. Panel principal: filtros combinables, indicadores sensibles a la selección, el ranking de
+franjas de mayor riesgo y las vistas descriptivas con el volumen anotado en cada barra.*
+
 **Ranking de franjas de itinerario** — es la respuesta directa a la pregunta de negocio y el
 elemento central del tablero: una lista priorizada de combinaciones concretas de aerolínea, ruta,
 día y franja, ordenadas por riesgo. Es lo que el equipo de planeación se lleva de aquí.
@@ -330,6 +335,17 @@ retrasa el 19%.
 
 Ejemplos: `DAL–HOU` de WN, miércoles 14:00 → **77%, riesgo alto, priorizar**. `LGA–BOS` de DL,
 sábado 07:00 → **28%, riesgo bajo, no requiere refuerzo**.
+
+![Vistas descriptivas y formulario de evaluación](images/tablero_02_prediccion.png)
+
+*Figura 5. Parte inferior del panel: tasa de retraso por día de la semana, evolución diaria de la
+tasa —con la ventana de entrenamiento sombreada— y el formulario de evaluación con sus seis campos.*
+
+![Resultado de la evaluación](images/tablero_03_riesgo_evaluado.png)
+
+*Figura 6. Respuesta del módulo para `WN · DAL–HOU · miércoles 14:00`: probabilidad, banda de riesgo
+con su acción asociada, y comparación contra el histórico de la aerolínea, la ruta, la franja y la
+media global. Sin ese contexto la cifra no es accionable.*
 
 **Coherencia con el modelo.** Las franjas que el tablero pone arriba del ranking son consistentes
 con lo que mostró la exploración: el puente aéreo de Southwest desde Dallas encabeza la lista
