@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "widgets.schema.json",
+  "title": "Dashboard widgets",
+  "description": "List of widgets assigned to the dashboard",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "title": "Widget",
+    "required": ["id", "title", "description", "htmlPath"],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique identifier for the widget"
+      },
+      "title": {
+        "type": "string",
+        "description": "Widget title shown on the dashboard card"
+      },
+      "description": {
+        "type": "string",
+        "description": "Short explanation of the widget, shown in the info tooltip"
+      },
+      "htmlPath": {
+        "type": "string",
+        "description": "Path to the static HTML file rendered inside the widget"
+      }
+    }
+  }
+}
