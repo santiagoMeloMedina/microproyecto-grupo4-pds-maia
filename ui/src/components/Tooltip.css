@@ -6,10 +6,10 @@
 .tooltip-trigger {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--hairline);
+  background: var(--canvas);
+  color: var(--muted);
   font-size: 12px;
   font-style: italic;
   line-height: 1;
@@ -23,8 +23,8 @@
 
 .tooltip-trigger:hover,
 .tooltip-trigger:focus-visible {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--info-border);
+  color: var(--link);
 }
 
 .tooltip-bubble {
@@ -33,12 +33,12 @@
   right: 0;
   z-index: 10;
   width: 220px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  background: var(--text-h);
-  color: var(--bg);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  color: var(--canvas);
   font-size: 12px;
-  line-height: 140%;
+  line-height: 1.4;
   text-align: left;
-  box-shadow: var(--shadow);
+  box-shadow: 0 12px 24px -8px rgba(15, 18, 24, 0.28);
 }

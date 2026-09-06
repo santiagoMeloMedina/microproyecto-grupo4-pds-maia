@@ -1,37 +1,63 @@
 :root {
-  --text: #4b4650;
-  --text-h: #08060d;
-  --bg: #f5f5f8;
-  --surface: #ffffff;
-  --border: #e2e1e6;
-  --accent: #6c3bff;
-  --accent-bg: rgba(108, 59, 255, 0.1);
-  --shadow: rgba(0, 0, 0, 0.08) 0 4px 12px -2px;
+  /* Surfaces */
+  --canvas: #ffffff;
+  --surface-soft: #f8fafc;
+  --surface-strong: #e0e2e6;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* Ink / primary */
+  --ink: #181d26;
+  --primary: #181d26;
+  --primary-active: #0d1218;
+  --on-primary: #ffffff;
+
+  /* Text */
+  --body-text: #333840;
+  --muted: #41454d;
+
+  /* Lines */
+  --hairline: #dddddd;
+  --border-strong: #9297a0;
+
+  /* Semantic */
+  --link: #1b61c9;
+  --link-active: #1a3866;
+  --info: #254fad;
+  --info-border: #458fff;
+  --success: #006400;
+  --success-border: #39bf45;
+  --danger: #e03131;
+
+  /* Type */
+  --sans: 'Haas Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
-  font: 16px/145% var(--sans);
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
+  /* Radius scale */
+  --radius-xs: 2px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+  --radius-full: 9999px;
+
+  /* Spacing scale (4px base) */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --space-section: 96px;
+
+  font: 400 16px/1.25 var(--sans);
+  color-scheme: light;
+  color: var(--body-text);
+  background: var(--surface-soft);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #d1d0d6;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --surface: #1f2028;
-    --border: #2e303a;
-    --accent: #a78bfa;
-    --accent-bg: rgba(167, 139, 250, 0.15);
-    --shadow: rgba(0, 0, 0, 0.4) 0 4px 12px -2px;
-  }
 }
 
 * {
@@ -43,9 +69,30 @@ body {
 }
 
 h1,
-h2 {
+h2,
+h3 {
   font-family: var(--sans);
-  font-weight: 600;
-  color: var(--text-h);
+  font-weight: 400;
+  color: var(--ink);
   margin: 0;
+}
+
+h1 {
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+button {
+  font-family: var(--sans);
 }

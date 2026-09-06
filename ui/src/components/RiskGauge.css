@@ -2,21 +2,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-xs);
 }
 
 .risk-gauge-value {
   font-size: 22px;
-  font-weight: 700;
-  fill: var(--text-h);
+  font-weight: 500;
+  fill: var(--ink);
+  font-family: var(--sans);
 }
 
 .risk-gauge-caption {
-  font-size: 11px;
-  fill: var(--text);
+  font-size: 12px;
+  fill: var(--muted);
+  font-family: var(--sans);
 }
 
 .risk-gauge-label {
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 14px;
   margin: 0;
 }

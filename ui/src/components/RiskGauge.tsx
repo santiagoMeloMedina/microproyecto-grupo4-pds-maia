@@ -7,8 +7,8 @@ interface RiskGaugeProps {
 }
 
 const RISK_COLOR: Record<RiskLevel, string> = {
-  bajo: '#2f9e44',
-  medio: '#f08c00',
+  bajo: '#006400',
+  medio: '#d9a441',
   alto: '#e03131',
 }
 
@@ -32,7 +32,7 @@ function RiskGauge({ probability, riskLevel }: RiskGaugeProps) {
           cy="70"
           r={radius}
           fill="none"
-          stroke="var(--border)"
+          stroke="var(--hairline)"
           strokeWidth="12"
         />
         <circle

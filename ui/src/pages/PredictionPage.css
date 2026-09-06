@@ -1,27 +1,31 @@
 .prediction-page {
   min-height: 100svh;
-  padding: 24px;
+  padding: var(--space-lg);
+  background: var(--surface-soft);
 }
 
 .prediction-page-header {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-lg);
   max-width: 640px;
 }
 
 .prediction-page-header h1 {
-  font-size: 28px;
-  margin-bottom: 8px;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: var(--space-xs);
 }
 
 .prediction-page-header p {
-  color: var(--text);
+  color: var(--body-text);
   font-size: 14px;
+  line-height: 1.25;
 }
 
 .prediction-layout {
   display: grid;
   grid-template-columns: minmax(280px, 360px) 1fr;
-  gap: 20px;
+  gap: var(--space-lg);
   align-items: start;
 }
 
@@ -32,39 +36,42 @@
 }
 
 .prediction-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: var(--shadow);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
 }
 
 .prediction-panel h2 {
-  font-size: 16px;
-  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: var(--space-md);
 }
 
 .prediction-empty {
-  color: var(--text);
+  color: var(--muted);
   font-size: 14px;
   margin: 0;
 }
 
 .prediction-disclaimer {
-  font-size: 12px;
-  color: var(--text);
-  background: var(--accent-bg);
-  border-radius: 6px;
-  padding: 8px 10px;
-  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.25;
+  color: var(--info);
+  background: rgba(69, 143, 255, 0.1);
+  border: 1px solid var(--info-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  margin: 0 0 var(--space-md);
 }
 
 .prediction-result-top {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: var(--space-lg);
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-lg);
 }
 
 .prediction-result-threshold {
@@ -73,13 +80,17 @@
 }
 
 .prediction-result-threshold h3 {
-  font-size: 13px;
-  margin: 0 0 8px;
-  color: var(--text-h);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.16px;
+  margin: 0 0 var(--space-xs);
+  color: var(--ink);
 }
 
 .prediction-result-factors h3 {
-  font-size: 13px;
-  margin: 0 0 12px;
-  color: var(--text-h);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.16px;
+  margin: 0 0 var(--space-sm);
+  color: var(--ink);
 }

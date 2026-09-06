@@ -1,55 +1,61 @@
 .widget-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(24, 29, 38, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: var(--space-lg);
   z-index: 100;
 }
 
 .widget-modal {
-  background: var(--surface);
-  border-radius: 10px;
+  background: var(--canvas);
+  border-radius: var(--radius-lg);
   width: min(960px, 100%);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-  box-shadow: var(--shadow);
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  box-shadow: 0 24px 48px -12px rgba(15, 18, 24, 0.24);
 }
 
 .widget-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-sm);
 }
 
 .widget-modal-header h2 {
-  font-size: 20px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0.12px;
+  color: var(--ink);
 }
 
 .widget-modal-close {
-  border: 1px solid var(--border);
-  background: none;
-  border-radius: 6px;
-  padding: 6px 12px;
+  border: 1px solid var(--hairline);
+  background: var(--canvas);
+  border-radius: var(--radius-lg);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  color: var(--text);
+  color: var(--ink);
   flex-shrink: 0;
 }
 
 .widget-modal-close:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--border-strong);
 }
 
 .widget-modal-description {
   font-size: 14px;
-  color: var(--text);
+  line-height: 1.25;
+  color: var(--body-text);
   margin: 0;
   text-align: left;
 }
@@ -57,6 +63,6 @@
 .widget-modal iframe {
   flex: 1;
   min-height: 480px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
 }
