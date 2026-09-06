@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Patrones tacticos de retraso - miniatura</title>
+    <script src="https://cdn.plot.ly/plotly-4.0.0.min.js" integrity="sha256-FEYfO0yRyLtZCpnW0Dw/0DHKQO7Afrq3ml4+rBB818o=" crossorigin="anonymous"></script>
+    <style>
+      html, body { margin: 0; height: 100%; background: #0D1B2A; }
+      #thumb-chart { width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+    <div id="thumb-chart"></div>
+    <script>
+        Plotly.newPlot(
+            "thumb-chart",
+            [{"customdata": [["YV", 13725], ["OH", 12630], ["FL", 20827], ["HA", 5578], ["UA", 27619], ["US", 34500], ["AS", 11471], ["MQ", 36605], ["XE", 31126], ["AA", 45656], ["9E", 20686], ["EV", 27983], ["F9", 6453], ["DL", 60940], ["OO", 50254], ["B6", 18111], ["CO", 21118], ["WN", 94097]], "hovertemplate": "%{customdata[0]}<br>Tasa: %{x:.2%}<br>Retrasos: %{y:,}<br>Vuelos: %{customdata[1]:,}<extra></extra>", "marker": {"color": "#4DA3FF", "line": {"color": "#E5EDF5", "width": 0.8}, "opacity": 0.78, "size": {"dtype": "f8", "bdata": "fMVXfMXXJ0AT/Z2sljcnQNxzXEyx5itAKZ+gUfsvI0Ay/GbgQ8gvQLdt27Zt2zFAAIYiHguOJkAjmOjvZHUyQKYVogKl5DBA4Ax8CGkLNUAMvxn4ENIrQJuNVF2D/S9AKZ+gUfuvI0D87AJiU2k5QCx70Zy4WzZAgg8hbWFZKkAKGrX/QhEsQAAAAAAAAEBA"}}, "mode": "markers", "name": "Aerolínea", "x": {"dtype": "f8", "bdata": "1mf1l9EXzz8KBkE05b7RPx7aPYhcSNM/h+FbS+991D+yfY1V5rrUP9Oe6ZGMgNU/IThDBO+21T/cqaA/LkfWP8sLOdycQNg/3MIYiLLc2D9DELn9Q3PZP9ix8KbIvdk/tzDkaHzA3D91Z9HGmNTcPx5LFTpN/Nw/GjCLt3nj3T+wZHlPTh7iPzKmYAsKVOY/"}, "y": {"dtype": "i4", "bdata": "Bg0AAK4NAACDGAAA+gYAAPIiAABHLQAANA8AAMYxAAATLgAASEUAACIgAAD3KwAAUwsAADxrAADoWAAACiEAALUuAAB5AAEA"}, "type": "scatter"}],
+            {"shapes": [{"line": {"color": "#F5C518", "dash": "dash", "width": 4}, "type": "line", "x0": 0.4454437417845337, "x1": 0.4454437417845337, "xref": "x", "y0": 0, "y1": 1, "yref": "y domain"}, {"line": {"color": "#A7B6C7", "dash": "dot", "width": 2}, "type": "line", "x0": 0, "x1": 1, "xref": "x domain", "y0": 10100.5, "y1": 10100.5, "yref": "y"}], "xaxis": {"tickformat": ".0%", "showticklabels": false, "gridcolor": "#183248", "zeroline": false, "showgrid": false}, "yaxis": {"showticklabels": false, "gridcolor": "#183248", "zeroline": false, "showgrid": false}, "showlegend": false, "margin": {"l": 6, "r": 6, "t": 6, "b": 6}, "paper_bgcolor": "#0D1B2A", "plot_bgcolor": "#0D1B2A", "font": {"family": "Inter, Segoe UI, sans-serif", "color": "#E5EDF5", "size": 11}, "hoverlabel": {"font": {"color": "#E5EDF5"}, "bgcolor": "#183248"}},
+            {"displayModeBar": false, "responsive": true}
+        );
+    </script>
+</body>
+</html>

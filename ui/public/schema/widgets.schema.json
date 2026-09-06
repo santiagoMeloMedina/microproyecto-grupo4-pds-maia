@@ -7,7 +7,7 @@
   "items": {
     "type": "object",
     "title": "Widget",
-    "required": ["id", "title", "description", "htmlPath"],
+    "required": ["id", "title", "description", "thumbHtmlPath", "htmlPath"],
     "additionalProperties": false,
     "properties": {
       "id": {
@@ -22,9 +22,13 @@
         "type": "string",
         "description": "Short explanation of the widget, shown in the info tooltip"
       },
+      "thumbHtmlPath": {
+        "type": "string",
+        "description": "Path to the static HTML file rendered inside the small square widget card"
+      },
       "htmlPath": {
         "type": "string",
-        "description": "Path to the static HTML file rendered inside the widget"
+        "description": "Path to the static HTML file rendered inside the expanded widget modal"
       }
     }
   }

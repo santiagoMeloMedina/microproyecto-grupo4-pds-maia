@@ -1,56 +1,23 @@
 [
   {
-    "id": "delay-by-airline",
-    "title": "Tasa de retraso por aerolínea",
-    "description": "Tasa de retraso y volumen de vuelos por aerolínea.",
-    "htmlPath": "/widgets/delay-by-airline.html"
+    "id": "operational_prioritization",
+    "title": "Priorización de exposición e impacto",
+    "description": "Identificación de los segmentos que merecen atención por su tasa y volumen histórico de retrasos. Análisis descriptivo: no estima riesgo futuro ni el efecto de una intervención.",
+    "thumbHtmlPath": "/widgets/operational_prioritization/thumb.html",
+    "htmlPath": "/widgets/operational_prioritization/main.html"
   },
   {
-    "id": "delay-by-day",
-    "title": "Tasa de retraso por día de la semana",
-    "description": "Tasa de retraso y volumen de vuelos por día de la semana.",
-    "htmlPath": "/widgets/delay-by-day.html"
+    "id": "strategic_overview",
+    "title": "Panorama general de los retrasos",
+    "description": "Dimensión general del problema de retrasos de vuelos en la operación analizada.",
+    "thumbHtmlPath": "/widgets/strategic_overview/thumb.html",
+    "htmlPath": "/widgets/strategic_overview/main.html"
   },
   {
-    "id": "delay-by-time-band",
-    "title": "Tasa de retraso por franja horaria",
-    "description": "Tasa de retraso y volumen de vuelos por franja horaria de salida.",
-    "htmlPath": "/widgets/delay-by-time-band.html"
-  },
-  {
-    "id": "delay-by-route",
-    "title": "Tasa de retraso por ruta",
-    "description": "Tasa de retraso y volumen de vuelos para las rutas (origen-destino) con mayor volumen.",
-    "htmlPath": "/widgets/delay-by-route.html"
-  },
-  {
-    "id": "heatmap-time-airline",
-    "title": "Riesgo cruzado: franja horaria x aerolínea",
-    "description": "Tasa de retraso combinando franja horaria y aerolínea.",
-    "htmlPath": "/widgets/heatmap-time-airline.html"
-  },
-  {
-    "id": "heatmap-time-day",
-    "title": "Riesgo cruzado: franja horaria x día de la semana",
-    "description": "Tasa de retraso combinando franja horaria y día de la semana.",
-    "htmlPath": "/widgets/heatmap-time-day.html"
-  },
-  {
-    "id": "heatmap-time-route",
-    "title": "Riesgo cruzado: franja horaria x ruta",
-    "description": "Tasa de retraso combinando franja horaria y ruta, para las rutas con mayor volumen.",
-    "htmlPath": "/widgets/heatmap-time-route.html"
-  },
-  {
-    "id": "risk-ranking",
-    "title": "Ranking de itinerarios de mayor riesgo",
-    "description": "Combinaciones de aerolínea, ruta, día y franja horaria con mayor tasa de retraso y volumen suficiente para ser confiables.",
-    "htmlPath": "/widgets/risk-ranking.html"
-  },
-  {
-    "id": "delay-prediction",
-    "title": "Predicción de riesgo de retraso",
-    "description": "Ingresa un itinerario (aerolínea, ruta, día, franja horaria) y consulta la probabilidad de retraso estimada por el modelo a través de la API.",
-    "htmlPath": "/widgets/delay-prediction.html"
+    "id": "tactical_diagnosis",
+    "title": "Patrones tácticos de retraso",
+    "description": "Concentración de retrasos de vuelos por operador, horario y ubicación.",
+    "thumbHtmlPath": "/widgets/tactical_diagnosis/thumb.html",
+    "htmlPath": "/widgets/tactical_diagnosis/main.html"
   }
 ]

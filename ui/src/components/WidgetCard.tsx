@@ -19,7 +19,7 @@ function WidgetCard({ widget }: WidgetCardProps) {
       </header>
 
       <div className="widget-card-body">
-        <iframe src={widget.htmlPath} title={widget.title} loading="lazy" />
+        <iframe src={widget.thumbHtmlPath} title={widget.title} loading="lazy" />
       </div>
 
       <button
