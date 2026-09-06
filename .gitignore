@@ -25,3 +25,6 @@ __pycache__/
 *.pyc
 modeling/_humo.ipynb
 .DS_Store
+mlruns/
+models/scenarios.local.yaml
+__pycache__/

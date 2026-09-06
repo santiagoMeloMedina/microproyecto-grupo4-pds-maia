@@ -8,7 +8,9 @@ Requisitos: Python 3.
 make install
 ```
 
-Esto crea un entorno virtual en `.venv/` e instala `dvc[s3]` dentro de él.
+En sistemas basados en Ubuntu (24.04), `make install` primero instala las dependencias de sistema necesarias vía `apt` (`make`, `python3-pip`, `python3-venv`, `libgomp1` — esta última requerida por LightGBM) antes de crear el entorno virtual. Este paso se salta automáticamente si `apt-get` no está disponible.
+
+Luego crea un entorno virtual en `.venv/` e instala `dvc[s3]` dentro de él.
 
 `make install` no deja el entorno activado en tu shell. Para poder usar los comandos instalados (por ejemplo `dvc`), actívalo manualmente después:
 
