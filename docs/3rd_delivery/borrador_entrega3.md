@@ -7,7 +7,9 @@
 > despliegue en contenedores. Se deja documentado para no perderlo y para que el equipo pueda
 > repartirse lo que falta.
 >
-> Los archivos correspondientes existen en el repositorio pero **no se han commiteado todavía**.
+> **Estado del repositorio:** este borrador conserva una propuesta de implementación, pero los
+> archivos de API, Streamlit y contenedores que menciona no están versionados en el repositorio
+> actual. Las referencias siguientes describen trabajo pendiente y no componentes disponibles.
 
 ---
 
@@ -19,8 +21,8 @@
 | Datos versionados en DVC | Parcial | `data/airlines.csv.dvc`. Falta versionar modelo y parquet. |
 | Modelos desarrollados | **Listo** | XGBoost seleccionado, 90 experimentos |
 | Experimentos en MLflow | **Listo** | Experimento `airlines-retrasos` |
-| Modelo empaquetado y desplegado en un API | **Listo, sin commitear** | `api/main.py` |
-| Artefactos para desplegar en contenedores | **Listo, sin commitear** | `api/Dockerfile`, `dashboard/Dockerfile`, `docker-compose.yml` |
+| Modelo empaquetado y desplegado en un API | Pendiente de incorporar | Propuesta: `api/main.py` |
+| Artefactos para desplegar en contenedores | Pendiente de incorporar | Propuesta: `api/Dockerfile`, `dashboard/Dockerfile`, `docker-compose.yml` |
 | Manual de usuario del tablero | Pendiente | — |
 | Manual de instalación | Pendiente | — |
 | Video de sustentación (máx. 10 min) | Pendiente | — |
@@ -58,19 +60,19 @@ Estado de pruebas: verificada de punta a punta. `DAL–HOU` de WN devuelve 76,8%
 
 ## 3. Tablero contra la API
 
-`dashboard/streamlit_app.py` es la versión del tablero que **no carga el modelo**: consume
-únicamente la API. Es el camino al que debe migrar el tablero de Dash en esta entrega, porque es lo
-que permite sustituir el modelo empaquetado sin tocar el front.
+La propuesta contemplaba `dashboard/streamlit_app.py` como una versión del tablero que no cargaría
+el modelo y consumiría únicamente la API. Ese archivo no está versionado en el repositorio actual.
+El enfoque permitiría sustituir el modelo empaquetado sin tocar el front.
 
-Se construyó en Streamlit como prueba del contrato de la API. Para la Entrega 3 hay que decidir si
-se migra el tablero de Dash a consumir la API —lo recomendable, porque es el que se entregó en la
-Entrega 2— o si se mantiene la versión de Streamlit.
+Para la Entrega 3 queda por decidir e implementar si el tablero de Dash consumirá la API o si se
+desarrollará una versión alternativa. Ninguna de las dos opciones está disponible actualmente como
+integración versionada.
 
 ---
 
 ## 4. Contenedores
 
-`docker-compose.yml` levanta dos servicios con *healthchecks* y versiones fijadas:
+La propuesta de `docker-compose.yml` contempla dos servicios con *healthchecks* y versiones fijadas:
 
 ```bash
 docker compose up --build
@@ -81,8 +83,8 @@ docker compose up --build
 Los artefactos se montan como volúmenes en lugar de copiarse a la imagen: pesan demasiado y cambian
 con cada reentrenamiento.
 
-Estado de pruebas: ambos contenedores construyen y arrancan; la API reporta *healthy* y responde
-correctamente desde el contenedor.
+Estado actual: los archivos de contenedores no están versionados, por lo que esta integración no se
+puede reproducir desde el repositorio.
 
 ---
 

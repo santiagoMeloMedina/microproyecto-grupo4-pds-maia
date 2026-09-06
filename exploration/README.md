@@ -2,6 +2,9 @@
 
 Esta carpeta es donde cada integrante del equipo hace su propia exploración de los datos, normalmente en un notebook (ej. `<nombre>-<tema>.ipynb`).
 
+El análisis consolidado de calidad, distribuciones y asociaciones con los retrasos está disponible
+en [pilar-airlines-report.md](pilar-airlines-report.md).
+
 ## Datos
 
 Los datos se importan desde `data/` en la raíz del proyecto. Por ejemplo, desde un notebook dentro de `exploration/`:
