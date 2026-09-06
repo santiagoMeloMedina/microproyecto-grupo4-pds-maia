@@ -30,8 +30,6 @@ TIME_BUCKET_HOURS = 2
 
 
 def load_data(data_path: str | None) -> pd.DataFrame:
-    """Misma limpieza (espacios iniciales, Length<=0, dia calendario) que usa
-    airlines_ml, para partir del mismo dataset que el resto del equipo."""
     return limpiar(cargar_crudo(data_path))
 
 
@@ -66,10 +64,6 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def prepare_dataset(data_path: str | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Construye las features propias sobre el dataset limpio de airlines_ml y
-    parte train/test con el mismo corte de dia calendario (prueba: dia >= 25)
-    que usa el notebook de Katherin, para que ambos flujos evaluen sobre el
-    mismo periodo."""
     df = build_features(load_data(data_path))
     dia = df["DiaCalendario"]
     train_df = df.loc[dia < DIA_FIN_VALIDACION].drop(columns=["DiaCalendario"]).reset_index(drop=True)
