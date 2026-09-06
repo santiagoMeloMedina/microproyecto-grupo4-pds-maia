@@ -1,0 +1,23 @@
+[
+  {
+    "id": "operational_prioritization",
+    "title": "Priorización de exposición e impacto",
+    "description": "Identificación de los segmentos que merecen atención por su tasa y volumen histórico de retrasos. Análisis descriptivo: no estima riesgo futuro ni el efecto de una intervención.",
+    "thumbHtmlPath": "/widgets/operational_prioritization/thumb.html",
+    "htmlPath": "/widgets/operational_prioritization/main.html"
+  },
+  {
+    "id": "strategic_overview",
+    "title": "Panorama general de los retrasos",
+    "description": "Dimensión general del problema de retrasos de vuelos en la operación analizada.",
+    "thumbHtmlPath": "/widgets/strategic_overview/thumb.html",
+    "htmlPath": "/widgets/strategic_overview/main.html"
+  },
+  {
+    "id": "tactical_diagnosis",
+    "title": "Patrones tácticos de retraso",
+    "description": "Concentración de retrasos de vuelos por operador, horario y ubicación.",
+    "thumbHtmlPath": "/widgets/tactical_diagnosis/thumb.html",
+    "htmlPath": "/widgets/tactical_diagnosis/main.html"
+  }
+]

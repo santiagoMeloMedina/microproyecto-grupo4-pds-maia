@@ -1,0 +1,41 @@
+.threshold-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
+.threshold-bar-track {
+  position: relative;
+  display: flex;
+  height: 14px;
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.threshold-segment.threshold-low {
+  background: #006400;
+}
+
+.threshold-segment.threshold-medium {
+  background: #d9a441;
+}
+
+.threshold-segment.threshold-high {
+  background: #e03131;
+}
+
+.threshold-marker {
+  position: absolute;
+  top: -3px;
+  width: 3px;
+  height: 20px;
+  background: var(--ink);
+  transform: translateX(-1.5px);
+}
+
+.threshold-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
