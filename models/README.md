@@ -6,9 +6,9 @@ Esta carpeta contiene el entrenamiento de modelos predictivos sobre el dataset d
 
 [train_lgbm.py](train_lgbm.py) entrena un `LGBMClassifier` (LightGBM) para predecir la columna `Delay` y registra parámetros, métricas y el modelo en MLflow.
 
-### Features
+### Features y datos
 
-La preparación de datos se encuentra en [features.py](features.py).
+La preparación de datos se encuentra en [features.py](features.py). La limpieza (espacios iniciales, filas con `Length<=0`, reconstrucción del día calendario) y la partición train/test (prueba = día ≥ 25) reutilizan [`airlines_ml.data`](../airlines_ml/data.py), el mismo módulo que usa el notebook `katherin-modelos-entrega2`. Así ambos flujos evalúan sobre exactamente el mismo período; solo cambian las features que arma cada uno encima de esos datos.
 
 **`AirlineDowPrevDelay`:** es un **proxy aproximado**, no la señal real de "delay propagado por la misma aeronave".
 
@@ -55,8 +55,8 @@ Con `python models/train_lgbm.py` sin argumentos ya se obtiene el resultado equi
 
 ### Ver las corridas en MLflow
 
-MLflow guarda las corridas localmente en `mlruns/` (en el directorio desde donde se ejecuta el script). Para explorarlas:
+El experimento por defecto es `airlines-retrasos`, el mismo que usa el notebook de Katherin. El tracking se resuelve con [`airlines_ml.tracking`](../airlines_ml/tracking.py) (ver [docs/2nd_delivery/mlflow_ec2.md](../docs/2nd_delivery/mlflow_ec2.md)): si hay un `.env` en la raíz con `MLFLOW_TRACKING_URI` apuntando al servidor EC2 del equipo, las corridas quedan ahí junto con las de los demás modelos; sin `.env`, caen en el mismo SQLite local (`mlflow.db` en la raíz) que usa el notebook, así que de todas formas se ven juntas con `mlflow ui`.
 
 ```bash
-mlflow ui
+mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```

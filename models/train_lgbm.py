@@ -1,20 +1,23 @@
 from __future__ import annotations
 
 import argparse
+import sys
+from pathlib import Path
 
 import mlflow
 import mlflow.lightgbm
-import pandas as pd
 import yaml
 from lightgbm import LGBMClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from airlines_ml import tracking
 from features import CATEGORICAL_COLUMNS, TARGET_COLUMN, prepare_dataset
 
 SCENARIO_KEYS = [
     "data_path",
     "experiment_name",
-    "test_size",
     "random_state",
     "n_estimators",
     "learning_rate",
@@ -29,8 +32,7 @@ SCENARIO_KEYS = [
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--data-path", default="data/airlines.csv")
-    parser.add_argument("--experiment-name", default="airlines-delay-lgbm")
-    parser.add_argument("--test-size", type=float, default=0.2)
+    parser.add_argument("--experiment-name", default="airlines-retrasos")
     parser.add_argument("--random-state", type=int, default=42)
     parser.add_argument("--n-estimators", type=int, default=300)
     parser.add_argument("--learning-rate", type=float, default=0.05)
@@ -62,14 +64,8 @@ def load_scenarios(scenarios_file: str) -> list[dict]:
     return scenarios
 
 
-def split_time_ordered(df: pd.DataFrame, test_size: float) -> tuple[pd.DataFrame, pd.DataFrame]:
-    split_idx = int(len(df) * (1 - test_size))
-    return df.iloc[:split_idx], df.iloc[split_idx:]
-
-
 def run_scenario(params: dict, run_name: str | None = None) -> dict:
-    df = prepare_dataset(params["data_path"])
-    train_df, test_df = split_time_ordered(df, params["test_size"])
+    train_df, test_df = prepare_dataset(params["data_path"])
 
     X_train = train_df.drop(columns=[TARGET_COLUMN])
     y_train = train_df[TARGET_COLUMN]
@@ -88,10 +84,9 @@ def run_scenario(params: dict, run_name: str | None = None) -> dict:
         "random_state": params["random_state"],
     }
 
-    mlflow.set_experiment(params["experiment_name"])
+    tracking.configurar(params["experiment_name"])
     with mlflow.start_run(run_name=run_name):
         mlflow.log_params(model_params)
-        mlflow.log_param("test_size", params["test_size"])
 
         model = LGBMClassifier(**model_params)
         model.fit(X_train, y_train, categorical_feature=CATEGORICAL_COLUMNS)

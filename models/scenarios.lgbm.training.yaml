@@ -1,8 +1,12 @@
 # Cada elemento de la lista es un escenario. "name" es opcional y se usa
 # como nombre de la corrida en MLflow. Cualquier campo que no se indique
 # toma el valor por defecto (o el pasado por CLI): data_path,
-# experiment_name, test_size, random_state, n_estimators, learning_rate,
+# experiment_name, random_state, n_estimators, learning_rate,
 # num_leaves, max_depth, min_child_samples, reg_alpha, reg_lambda, is_unbalance.
+#
+# El split train/test es fijo (mismo corte de dia calendario que usa
+# airlines_ml.data / el notebook de Katherin: prueba = dia >= 25), asi que ya
+# no hay parametro test_size.
 
 - name: baseline
   n_estimators: 300
@@ -18,9 +22,6 @@
 
 - name: arboles_mas_grandes
   num_leaves: 127
-
-- name: test_size_mayor
-  test_size: 0.3
 
 - name: learning_rate_bajo
   learning_rate: 0.03
