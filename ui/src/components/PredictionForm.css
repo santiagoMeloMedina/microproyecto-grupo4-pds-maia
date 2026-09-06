@@ -1,13 +1,27 @@
 .prediction-form {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-md);
 }
 
 .prediction-field {
   display: flex;
   flex-direction: column;
   gap: var(--space-xxs);
+  flex: 1 1 160px;
+  min-width: 160px;
+}
+
+.prediction-field-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs);
+}
+
+.prediction-field-label .tooltip-bubble {
+  left: 0;
+  right: auto;
 }
 
 .prediction-field label {
@@ -40,6 +54,7 @@
 }
 
 .prediction-submit {
+  flex: 1 1 100%;
   margin-top: var(--space-xs);
   padding: 16px 24px;
   border-radius: var(--radius-lg);

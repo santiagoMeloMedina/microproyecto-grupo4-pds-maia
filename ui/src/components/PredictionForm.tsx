@@ -4,6 +4,7 @@ import airlines from '../data/prediction/airlines.json'
 import airports from '../data/prediction/airports.json'
 import daysOfWeek from '../data/prediction/days-of-week.json'
 import type { PredictionInput } from '../types/prediction'
+import Tooltip from './Tooltip'
 import './PredictionForm.css'
 
 interface PredictionFormProps {
@@ -30,7 +31,10 @@ function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
   return (
     <form className="prediction-form" onSubmit={handleSubmit}>
       <div className="prediction-field">
-        <label htmlFor="airline">Aerolínea</label>
+        <span className="prediction-field-label">
+          <label htmlFor="airline">Aerolínea</label>
+          <Tooltip label="Acerca de Aerolínea" text="Código IATA de la aerolínea que opera el vuelo." />
+        </span>
         <select id="airline" value={airline} onChange={(e) => setAirline(e.target.value)}>
           {airlines.map((code) => (
             <option key={code} value={code}>
@@ -41,7 +45,10 @@ function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
       </div>
 
       <div className="prediction-field">
-        <label htmlFor="airportFrom">Aeropuerto de origen</label>
+        <span className="prediction-field-label">
+          <label htmlFor="airportFrom">Origen</label>
+          <Tooltip label="Acerca de Origen" text="Código IATA del aeropuerto de salida." />
+        </span>
         <select
           id="airportFrom"
           value={airportFrom}
@@ -56,7 +63,10 @@ function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
       </div>
 
       <div className="prediction-field">
-        <label htmlFor="airportTo">Aeropuerto de destino</label>
+        <span className="prediction-field-label">
+          <label htmlFor="airportTo">Destino</label>
+          <Tooltip label="Acerca de Destino" text="Código IATA del aeropuerto de llegada." />
+        </span>
         <select id="airportTo" value={airportTo} onChange={(e) => setAirportTo(e.target.value)}>
           {airports.map((code) => (
             <option key={code} value={code}>
@@ -72,7 +82,10 @@ function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
       </div>
 
       <div className="prediction-field">
-        <label htmlFor="dayOfWeek">Día de la semana</label>
+        <span className="prediction-field-label">
+          <label htmlFor="dayOfWeek">Día</label>
+          <Tooltip label="Acerca de Día" text="Día de la semana programado para el vuelo." />
+        </span>
         <select
           id="dayOfWeek"
           value={dayOfWeek}
@@ -87,7 +100,13 @@ function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
       </div>
 
       <div className="prediction-field">
-        <label htmlFor="time">Hora programada (minutos desde medianoche)</label>
+        <span className="prediction-field-label">
+          <label htmlFor="time">Hora</label>
+          <Tooltip
+            label="Acerca de Hora"
+            text="Hora de salida programada, en minutos desde medianoche (0-1439)."
+          />
+        </span>
         <input
           id="time"
           type="number"
@@ -99,7 +118,10 @@ function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
       </div>
 
       <div className="prediction-field">
-        <label htmlFor="length">Duración del vuelo (minutos)</label>
+        <span className="prediction-field-label">
+          <label htmlFor="length">Duración</label>
+          <Tooltip label="Acerca de Duración" text="Duración estimada del vuelo, en minutos." />
+        </span>
         <input
           id="length"
           type="number"
