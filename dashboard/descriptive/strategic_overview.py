@@ -1,18 +1,19 @@
 """Genera la visión estratégica de retrasos en formato HTML."""
 from __future__ import annotations
 
-from pathlib import Path
-
 import plotly.graph_objects as go
 import plotly.io as pio
 
-from common import OUTPUT_DIR, load_data
-
-PANEL = "#0D1B2A"
-DELAY_COLOR = "#FF7A59"
-ON_TIME_COLOR = "#5BC0BE"
-TEXT = "#E5EDF5"
-STYLE_PATH = Path(__file__).with_name("strategic_overview.css")
+from common import (
+    FONT_FAMILY,
+    GREEN as ON_TIME_COLOR,
+    INK as TEXT,
+    OUTPUT_DIR,
+    PLOT as PANEL,
+    RED as DELAY_COLOR,
+    apply_figure_style,
+    load_data,
+)
 
 
 def build_distribution_figure(delayed: int, on_time: int) -> go.Figure:
@@ -43,14 +44,11 @@ def build_distribution_figure(delayed: int, on_time: int) -> go.Figure:
                 x=0.5,
                 y=0.5,
                 showarrow=False,
-                font=dict(family="Inter, Segoe UI, sans-serif", color=TEXT, size=24),
+                font=dict(family=FONT_FAMILY, color=TEXT, size=24),
         )
+        apply_figure_style(figure, height=320)
         figure.update_layout(
-                height=320,
                 margin=dict(l=20, r=20, t=20, b=20),
-                paper_bgcolor=PANEL,
-                plot_bgcolor=PANEL,
-                font=dict(family="Inter, Segoe UI, sans-serif", color=TEXT, size=13),
                 legend=dict(orientation="h", yanchor="bottom", y=-0.02, xanchor="center", x=0.5),
         )
         return figure
@@ -61,7 +59,6 @@ def render_strategic_html(
 ) -> str:
     on_time_rate = on_time / total
     percentage_gap = on_time_rate - delay_rate
-    stylesheet = STYLE_PATH.read_text(encoding="utf-8")
     figure_html = pio.to_html(
         build_distribution_figure(delayed, on_time),
         full_html=False,
@@ -79,13 +76,13 @@ def render_strategic_html(
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>{stylesheet}</style>
+    <link rel="stylesheet" href="../dashboard-design-system.css">
 </head>
-<body class="strategic-dashboard">
+<body class="dashboard-suite">
 <main>
     <header>
-        <div class="eyebrow">Nivel estratégico · Línea base</div>
         <h1>Panorama general de los retrasos</h1>
+        <p class="page-intro">Dimensión general del problema de retrasos de vuelos en la operación analizada.</p>
     </header>
     <section class="hero">
         <div><div class="section-label">Tasa global de retraso</div>
@@ -96,30 +93,30 @@ def render_strategic_html(
             muestra analizada. Este indicador ofrece una visión general del comportamiento observado antes de
             examinar aerolíneas, rutas u horarios específicos.</div>
     </section>
-    <section class="metrics">
-        <article class="metric"><span>Vuelos analizados</span><strong>{total:,}</strong></article>
-        <article class="metric"><span>Con retraso</span><strong>{delayed:,}</strong>
-            <small>{delay_rate:.2%} del total</small></article>
-        <article class="metric"><span>Sin retraso</span><strong>{on_time:,}</strong>
-            <small>{on_time_rate:.2%} del total</small></article>
+    <section class="dashboard-section" aria-labelledby="resumen-estrategico">
+        <div class="section-heading"><h2 id="resumen-estrategico">Resumen estratégico</h2></div>
+        <div class="metrics">
+            <article class="metric"><span>Vuelos analizados</span><strong>{total:,}</strong></article>
+            <article class="metric"><span>Con retraso</span><strong>{delayed:,}</strong>
+                <small>{delay_rate:.2%} del total</small></article>
+            <article class="metric"><span>Sin retraso</span><strong>{on_time:,}</strong>
+                <small>{on_time_rate:.2%} del total</small></article>
+        </div>
     </section>
-    <section class="analysis-grid">
-        <article class="panel chart-panel"><h2>Proporción de vuelos con y sin retraso</h2>{figure_html}</article>
-        <article class="panel"><h2>¿Qué nos dicen estos números?</h2>
-            <ul class="insights">
-                <li>El {delay_rate:.1%} de los vuelos presenta retraso; equivale a cerca de 45 de cada 100.</li>
-                <li>La diferencia entre vuelos sin retraso y retrasados es de {percentage_gap * 100:.1f} puntos porcentuales, equivalente a {on_time - delayed:,} vuelos.</li>
-                <li>La distribución observada sugiere que los retrasos son un comportamiento recurrente y no un evento aislado dentro de la muestra analizada.</li>
-            </ul>
-        </article>
+    <section class="dashboard-section" aria-labelledby="analisis-estrategico">
+        <div class="section-heading"><h2 id="analisis-estrategico">Análisis estratégico</h2></div>
+        <div class="analysis-grid">
+            <article class="panel chart-panel"><h2>Proporción de vuelos con y sin retraso</h2>{figure_html}</article>
+            <article class="panel findings-panel"><h2>Hallazgos estratégicos</h2>
+                <ul class="insights">
+                    <li>El {delay_rate:.1%} de los vuelos presenta retraso; equivale a cerca de 45 de cada 100.</li>
+                    <li>La diferencia entre vuelos sin retraso y retrasados es de {percentage_gap * 100:.1f} puntos porcentuales, equivalente a {on_time - delayed:,} vuelos.</li>
+                    <li>La distribución observada sugiere que los retrasos son un comportamiento recurrente y no un evento aislado dentro de la muestra analizada.</li>
+                </ul>
+            </article>
+        </div>
     </section>
-    <section class="benchmark">
-        <div><h2>¿Cómo interpretar este resultado?</h2>
-            <p>La proporción observada indica que los retrasos forman parte de manera recurrente de la
-            operación analizada. Este valor sirve como punto de comparación para identificar aerolíneas,
-            horarios, rutas o aeropuertos con niveles de retraso superiores o inferiores al promedio
-            general.</p></div>
-    </section>
+    <p class="executive-takeaway">Casi uno de cada dos vuelos presenta retrasos.</p>
 </main>
 </body>
 </html>

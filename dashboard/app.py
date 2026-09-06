@@ -4,9 +4,8 @@ Herramienta de planeacion: responde que combinaciones de aerolinea, ruta, dia y
 franja horaria concentran el mayor riesgo, para decidir donde reforzar recursos y
 que conexiones necesitan mas margen.
 
-Construido con Dash sobre la maqueta de la Entrega 1. En esta entrega el tablero
-carga el modelo y los datos directamente; en la Entrega 3 pasara a consumirlos a
-traves de la API (ver dashboard/streamlit_app.py como prueba de ese camino).
+Construido con Dash sobre la maqueta de la Entrega 1. El tablero carga el modelo
+y los datos directamente.
 
     python dashboard/app.py    ->    http://localhost:8050
 """

@@ -1,0 +1,49 @@
+name: Publish dashboard suite
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "dashboard/descriptive/dashboard-design-system.css"
+      - "dashboard/descriptive/output/**"
+      - ".github/workflows/dashboard-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: dashboard-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Prepare static dashboard site
+        run: |
+          mkdir -p _site/dashboard/descriptive/output
+          cp dashboard/descriptive/dashboard-design-system.css _site/dashboard/descriptive/
+          cp dashboard/descriptive/output/*.html _site/dashboard/descriptive/output/
+          touch _site/.nojekyll
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload dashboard artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy dashboard suite
+        id: deployment
+        uses: actions/deploy-pages@v4
