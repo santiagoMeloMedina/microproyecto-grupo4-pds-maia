@@ -3,10 +3,6 @@
 # toma el valor por defecto (o el pasado por CLI): data_path,
 # experiment_name, random_state, n_estimators, learning_rate,
 # num_leaves, max_depth, min_child_samples, reg_alpha, reg_lambda, is_unbalance.
-#
-# El split train/test es fijo (mismo corte de dia calendario que usa
-# airlines_ml.data / el notebook de Katherin: prueba = dia >= 25), asi que ya
-# no hay parametro test_size.
 
 - name: baseline
   n_estimators: 300
