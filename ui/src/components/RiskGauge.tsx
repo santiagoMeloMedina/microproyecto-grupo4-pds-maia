@@ -7,9 +7,9 @@ interface RiskGaugeProps {
 }
 
 const RISK_COLOR: Record<RiskLevel, string> = {
-  bajo: '#006400',
-  medio: '#d9a441',
-  alto: '#e03131',
+  bajo: '#5bc0be',
+  medio: '#f5c518',
+  alto: '#ff7a59',
 }
 
 const RISK_LABEL: Record<RiskLevel, string> = {

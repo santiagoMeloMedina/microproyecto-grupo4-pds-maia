@@ -1,7 +1,7 @@
 .widget-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(24, 29, 38, 0.5);
+  background: rgba(4, 10, 18, 0.78);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,7 +18,7 @@
   flex-direction: column;
   gap: var(--space-sm);
   padding: var(--space-lg);
-  box-shadow: 0 24px 48px -12px rgba(15, 18, 24, 0.24);
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6);
 }
 
 .widget-modal-header {
@@ -30,9 +30,8 @@
 
 .widget-modal-header h2 {
   font-size: 24px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.35;
-  letter-spacing: 0.12px;
   color: var(--ink);
 }
 
@@ -49,7 +48,8 @@
 }
 
 .widget-modal-close:hover {
-  border-color: var(--border-strong);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .widget-modal-description {

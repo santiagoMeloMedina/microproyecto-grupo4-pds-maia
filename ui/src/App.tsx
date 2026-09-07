@@ -7,6 +7,10 @@ function App() {
   return (
     <div className="app-shell">
       <nav className="app-nav">
+        <span className="app-brand">
+          Microproyecto - Desarrollo de Soluciones
+          <span className="app-brand-dataset">Airlines Dataset</span>
+        </span>
         <NavLink
           to="/"
           end
