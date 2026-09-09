@@ -1,4 +1,8 @@
 .venv/
+.venv-api/
+
+# Cache de pytest, generado al correr las pruebas de api/ o package-src/
+.pytest_cache/
 
 data/*
 !data/*.dvc
