@@ -1,0 +1,16 @@
+include *.txt
+include *.md
+include *.cfg
+recursive-include ./model_riesgo_retraso/*
+
+include model_riesgo_retraso/VERSION
+include model_riesgo_retraso/config.yml
+include model_riesgo_retraso/trained_models/*.pkl
+include model_riesgo_retraso/trained_models/metadata.json
+include requirements/*.txt
+
+exclude *.log
+exclude *.cfg
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
