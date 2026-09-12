@@ -27,4 +27,21 @@ modeling/_humo.ipynb
 .DS_Store
 mlruns/
 models/scenarios.local.yaml
-__pycache__/
+
+# --- Entrega 3 -------------------------------------------------------------
+# Paquete del modelo. El pipeline entrenado y el dist/ se generan con
+# `tox run -e train` y `python -m build`; lo que se versiona es el wheel ya
+# construido en api/model-package/, que es lo que la API instala.
+model-pkg/.tox/
+model-pkg/build/
+model-pkg/dist/
+model-pkg/*.egg-info/
+model-pkg/model_riesgo_retraso/trained_models/*.pkl
+model-pkg/model_riesgo_retraso/trained_models/metadata.json
+
+.pytest_cache/
+.venv-api/
+
+# Dependencias y build del tablero React
+ui/node_modules/
+ui/dist/
