@@ -16,11 +16,8 @@
 }
 
 .widget-card-header h2 {
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.4;
+  font-size: 14px;
   text-align: left;
-  color: var(--ink);
 }
 
 .widget-card-body {
@@ -50,5 +47,6 @@
 }
 
 .widget-expand-button:hover {
-  border-color: var(--border-strong);
+  border-color: var(--primary);
+  color: var(--primary);
 }

@@ -13,15 +13,15 @@
 }
 
 .threshold-segment.threshold-low {
-  background: #006400;
+  background: #5bc0be;
 }
 
 .threshold-segment.threshold-medium {
-  background: #d9a441;
+  background: #f5c518;
 }
 
 .threshold-segment.threshold-high {
-  background: #e03131;
+  background: #ff7a59;
 }
 
 .threshold-marker {

@@ -7,17 +7,36 @@
   display: flex;
   align-items: center;
   gap: var(--space-lg);
-  height: 64px;
-  padding: 0 var(--space-lg);
+  min-height: 64px;
+  padding: var(--space-xs) var(--space-lg);
+  border-top: 3px solid var(--primary);
   border-bottom: 1px solid var(--hairline);
   background: var(--canvas);
+}
+
+.app-brand {
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  margin-right: auto;
+}
+
+.app-brand-dataset {
+  color: var(--body-text);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: normal;
 }
 
 .app-nav-link {
   display: inline-flex;
   align-items: center;
-  height: 100%;
-  color: var(--muted);
+  align-self: stretch;
+  color: var(--body-text);
   text-decoration: none;
   font-size: 14px;
   font-weight: 400;
@@ -26,11 +45,11 @@
 }
 
 .app-nav-link:hover {
-  color: var(--ink);
+  color: var(--primary);
 }
 
 .app-nav-link.active {
-  color: var(--ink);
-  font-weight: 500;
-  border-bottom-color: var(--ink);
+  color: var(--primary);
+  font-weight: 600;
+  border-bottom-color: var(--primary);
 }
