@@ -1,20 +1,21 @@
-# Dependencias de la API de riesgo de retraso (api/app).
+# Dependencias de la API de riesgo de retraso.
 #
-# La API carga el mismo modelo y los mismos datos que dashboard/app.py (Dash),
-# por eso necesita scikit-learn/xgboost para deserializar el pipeline y
-# pyarrow para leer dashboard/data/vuelos.parquet. Genera esos artefactos con
-# modeling/katherin-modelos-entrega2.ipynb antes de levantar la API.
+# El modelo no se lista como un archivo suelto ni se deserializa a mano: se
+# instala el paquete model_riesgo_retraso, construido en model-pkg/. El wheel
+# trae el pipeline ya entrenado y fija las versiones de numpy, pandas, scipy,
+# scikit-learn, xgboost y joblib con las que fue entrenado, de modo que la API
+# nunca sirva con una version distinta de la que entreno.
+#
+# La ruta es relativa al directorio desde el que se ejecuta pip, asi que la
+# instalacion debe lanzarse desde api/ (que es lo que hacen tox y el Dockerfile).
+./model-package/model_riesgo_retraso-0.0.1-py3-none-any.whl
+
 uvicorn>=0.20.0,<0.30.0
 fastapi>=0.100.0,<1.0.0
-pydantic>=2.0.0,<3.0.0
 pydantic-settings>=2.0.0,<3.0.0
 python-multipart>=0.0.5,<0.1.0
 typing_extensions>=4.2.0,<5.0.0
 loguru>=0.5.3,<1.0.0
-pandas==2.3.3
-numpy==2.4.6
-scikit-learn==1.9.0
-scipy==1.17.1
-xgboost==3.2.0
-joblib==1.5.3
+
+# Lectura del historico de vuelos que alimenta las vistas descriptivas.
 pyarrow==25.0.1

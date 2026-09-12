@@ -29,6 +29,7 @@ class FakeArtifacts:
         self.threshold = 0.5
         self.high_band_threshold = 0.7
         self.model_family = "fake-xgboost"
+        self.model_version = "0.0.0-fake"
 
         self.flights = pd.DataFrame(
             {

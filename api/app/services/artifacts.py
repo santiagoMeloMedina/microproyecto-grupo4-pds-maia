@@ -1,20 +1,29 @@
 from __future__ import annotations
 
-import json
-import sys
+import os
 from pathlib import Path
 from typing import Any
 
-import joblib
 import pandas as pd
+from model_riesgo_retraso import __version__ as model_version
+from model_riesgo_retraso.predict import get_metadata
+from model_riesgo_retraso.processing.data_manager import load_pipeline
 
 ROOT = Path(__file__).resolve().parents[3]
 
-
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
 CLAVE_FRANJA = ["Airline", "AirportFrom", "AirportTo", "DayOfWeek", "Franja"]
+
+
+def _ruta_historico() -> Path:
+    """Ubica el parquet con el historico de vuelos.
+
+    Se resuelve por variable de entorno para que el contenedor pueda montarlo
+    donde quiera, y contra el repositorio cuando se corre en local.
+    """
+    ruta_env = os.getenv("AIRLINES_PARQUET")
+    if ruta_env:
+        return Path(ruta_env)
+    return ROOT / "dashboard" / "data" / "vuelos.parquet"
 
 
 def _franja_de(minutos: int) -> str:
@@ -25,21 +34,28 @@ def _franja_de(minutos: int) -> str:
 
 
 class Artifacts:
-    """Modelo, metadata y datos historicos, cargados una sola vez por proceso."""
+    """Modelo, metadata y datos historicos, cargados una sola vez por proceso.
+
+    El modelo no se deserializa desde un archivo suelto del repositorio: se toma
+    del paquete `model_riesgo_retraso`, instalado con pip desde el wheel que
+    construye model-pkg/. Asi la API no necesita que airlines_ml este en el
+    PYTHONPATH ni que exista models/modelo_ganador.joblib, y la version del
+    modelo que sirve queda registrada en su propia metadata.
+    """
 
     def __init__(self) -> None:
-        try:
-            self.model = joblib.load(ROOT / "models" / "modelo_ganador.joblib")
-            self.metadata: dict[str, Any] = json.loads(
-                (ROOT / "models" / "metadata.json").read_text(encoding="utf-8")
-            )
-            self.flights = pd.read_parquet(ROOT / "dashboard" / "data" / "vuelos.parquet")
-        except FileNotFoundError as exc:
+        self.model = load_pipeline()
+        self.metadata: dict[str, Any] = get_metadata()
+        self.model_version = model_version
+
+        ruta = _ruta_historico()
+        if not ruta.exists():
             raise RuntimeError(
-                f"Falta un artefacto del modelo: {exc}. Ejecuta "
-                "modeling/katherin-modelos-entrega2.ipynb para generarlos (ver "
-                "dashboard/app.py, que depende de los mismos archivos)."
-            ) from exc
+                f"Falta el historico de vuelos en {ruta}. Generalo con "
+                "`python scripts/generar_datos_tablero.py` o define la variable "
+                "de entorno AIRLINES_PARQUET."
+            )
+        self.flights = pd.read_parquet(ruta)
 
         self.threshold = float(self.metadata.get("umbral", 0.5))
         self.high_band_threshold = float(
@@ -52,8 +68,10 @@ class Artifacts:
     def _build_slots(self) -> pd.DataFrame:
         """Una fila por franja de itinerario, con su riesgo estimado por el modelo.
 
-        Ver dashboard/app.py::construir_franjas: el riesgo se toma del modelo y no
-        de la tasa observada porque cada franja tiene pocos vuelos en el periodo.
+        El riesgo se toma del modelo y no de la tasa observada porque cada franja
+        tiene pocos vuelos en el periodo: la tasa observada de una franja con
+        cuatro vuelos es ruido, mientras que el modelo comparte fuerza entre
+        franjas parecidas.
         """
         grouped = (
             self.flights.groupby(CLAVE_FRANJA, observed=True)
