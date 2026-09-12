@@ -47,6 +47,19 @@ Queda en `http://localhost:8002`. Docs interactivas en `http://localhost:8002/do
 Python 3.9 (ver `.venv/pyvenv.cfg`), por eso la API necesita su propio entorno virtual y no
 puede compartir el de `make install`.
 
+## Levantar la API con Docker
+
+El build necesita `api/`, `models/` y `dashboard/data/` (y `airlines_ml/`, porque el `.joblib`
+está serializado con sus clases), así que el contexto de build es la raíz del repo, no `api/`.
+Generar antes los artefactos del modelo (ver arriba) si aún no existen.
+
+```bash
+docker build -f api/Dockerfile -t airlines-api .
+docker run -p 8002:8002 airlines-api
+```
+
+Queda en `http://localhost:8002`, igual que con uvicorn local.
+
 ## Pruebas
 
 ```bash
