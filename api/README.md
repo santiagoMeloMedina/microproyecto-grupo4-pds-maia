@@ -20,42 +20,50 @@ api/
 
 ## Artefactos requeridos
 
-La API carga los mismos artefactos que `dashboard/app.py`, y con la misma convención: no se
-versionan en git (ver `.gitignore` en la raíz) y se generan ejecutando el notebook de modelado.
+Ninguno que haya que generar a mano. El modelo viaja dentro del paquete
+`model_riesgo_retraso`, que se instala desde el wheel en `model-package/`, y el histórico de
+vuelos está versionado en `dashboard/data/vuelos.parquet`.
 
-```bash
-pip install -r modeling/requirements.txt
-jupyter lab modeling/katherin-modelos-entrega2.ipynb
-```
+Es lo que permite construir la imagen desde un clon limpio: antes la API deserializaba
+`models/modelo_ganador.joblib` con `joblib.load` e insertaba la raíz del repositorio en `sys.path`
+para que el pickle encontrara `airlines_ml`, de modo que dependía de archivos que no estaban en
+git y de la estructura del repositorio.
 
-Esto produce `models/modelo_ganador.joblib`, `models/metadata.json` (versionado) y
-`dashboard/data/vuelos.parquet`. Si faltan, la API falla al arrancar con un mensaje indicando
-qué archivo falta.
+Para regenerar el wheel, ver [model-pkg/README.md](../model-pkg/README.md). Para regenerar el
+parquet, `python scripts/generar_datos_tablero.py` desde la raíz.
 
 ## Levantar la API
 
+Con tox, que crea su propio entorno virtual e instala el paquete del modelo:
+
 ```bash
-python -m venv .venv-api && source .venv-api/bin/activate   # entorno propio, Python 3.10+
-pip install -r api/requirements.txt
-cd api && uvicorn app.main:app --reload --port 8002
+cd api
+pip install tox
+tox run -e run
 ```
 
 Queda en `http://localhost:8002`. Docs interactivas en `http://localhost:8002/docs`.
 
-`api/requirements.txt` fija `numpy`/`scipy`/`xgboost` en las mismas versiones que
-`dashboard/requirements.txt`, que requieren Python 3.10+. El `.venv/` de la raíz del repo usa
-Python 3.9 (ver `.venv/pyvenv.cfg`), por eso la API necesita su propio entorno virtual y no
-puede compartir el de `make install`.
+Para correr las pruebas:
+
+```bash
+tox run -e test_app
+```
 
 ## Levantar la API con Docker
 
-El build necesita `api/`, `models/` y `dashboard/data/` (y `airlines_ml/`, porque el `.joblib`
-está serializado con sus clases), así que el contexto de build es la raíz del repo, no `api/`.
-Generar antes los artefactos del modelo (ver arriba) si aún no existen.
+El contexto de build es la raíz del repositorio, no `api/`, porque la imagen necesita también
+`dashboard/data/vuelos.parquet`.
 
 ```bash
 docker build -f api/Dockerfile -t airlines-api .
 docker run -p 8002:8002 airlines-api
+```
+
+Lo habitual es levantarla junto al tablero con Docker Compose desde la raíz:
+
+```bash
+docker compose up --build
 ```
 
 Queda en `http://localhost:8002`, igual que con uvicorn local.
@@ -76,7 +84,7 @@ Prefijo `/api/v1`. Todas las respuestas usan camelCase (pensado para consumirse 
 
 | Método | Ruta | Para qué |
 |---|---|---|
-| GET | `/health` | Familia del modelo cargado y umbrales de riesgo. |
+| GET | `/health` | Versión de la API, **versión del paquete del modelo**, familia y umbrales de riesgo. |
 | GET | `/catalog` | Aerolíneas, aeropuertos, rutas frecuentes y días válidos, derivados del histórico — alimenta el formulario de predicción. |
 | POST | `/predict` | Riesgo estimado para un itinerario (`airline`, `airportFrom`, `airportTo`, `dayOfWeek`, `time`, `length`), con tasas históricas de referencia. Equivalente al callback `evaluar` de `dashboard/app.py`. |
 | GET | `/schedule-slots` | Franjas de itinerario (aerolínea × ruta × día × franja horaria) ordenadas por riesgo, con los mismos cuatro filtros del tablero Dash (`airline`, `route`, `dayOfWeek`, `slot`). |
@@ -87,9 +95,12 @@ Prefijo `/api/v1`. Todas las respuestas usan camelCase (pensado para consumirse 
 `POST /predict` rechaza con `422` si `airportFrom == airportTo`. Los demás filtros son opcionales;
 sin filtros, se calculan sobre todo el histórico.
 
-## Qué no cambia todavía
+## Qué consume el tablero y qué no
 
-Las tres vistas descriptivas de `ui/` (`operational_prioritization`, `strategic_overview`,
+`ui/` consume `/catalog` y `/predict` en la página de predicción, y `/schedule-slots` con
+`/schedule-slots/summary` en la vista de franjas a reforzar.
+
+Las tres vistas descriptivas (`operational_prioritization`, `strategic_overview`,
 `tactical_diagnosis`, en `ui/public/widgets/`) siguen siendo HTML estático generado por
-`dashboard/descriptive/generate_all.py`; no las sirve esta API. Los endpoints de
-`/schedule-slots` cubren la analítica del tablero Dash, que hoy no tiene equivalente en `ui/`.
+`dashboard/descriptive/generate_all.py`: no las sirve esta API. `/schedule-slots/breakdown` y
+`/schedule-slots/drift` están disponibles y probados, pero todavía sin vista propia en el tablero.

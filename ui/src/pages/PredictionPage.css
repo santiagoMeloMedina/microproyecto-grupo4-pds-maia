@@ -75,7 +75,7 @@
   border: 1px solid var(--info-border);
   border-radius: var(--radius-sm);
   padding: var(--space-xs) var(--space-sm);
-  margin: 0 0 var(--space-md);
+  margin: var(--space-md) 0 0;
 }
 
 .prediction-result-top {
@@ -105,4 +105,23 @@
   letter-spacing: 0.16px;
   margin: 0 0 var(--space-sm);
   color: var(--ink);
+}
+
+.prediction-error {
+  font-size: 14px;
+  line-height: 1.25;
+  color: var(--danger);
+  background: rgba(224, 49, 49, 0.08);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  margin: 0;
+}
+
+/* Traduce la banda a la accion de planeacion que le corresponde. */
+.prediction-action {
+  margin: var(--space-xs) 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.3;
 }

@@ -1,0 +1,14 @@
+# Dependencias del paquete del modelo.
+#
+# Las versiones van fijas y no con rangos: el pipeline se serializa con pickle,
+# y pickle no garantiza compatibilidad entre versiones de scikit-learn ni de
+# xgboost. Entrenar con una version y servir con otra es la causa mas comun de
+# que un modelo empaquetado falle en produccion sin dar un error claro.
+numpy==2.4.6
+pandas==2.3.3
+scipy==1.17.1
+scikit-learn==1.9.0
+xgboost==3.2.0
+joblib==1.5.3
+pydantic==2.13.4
+strictyaml==1.7.3

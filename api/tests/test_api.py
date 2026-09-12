@@ -95,3 +95,37 @@ def test_schedule_slots_drift(client: TestClient) -> None:
     assert response.status_code == 200
     body = response.json()
     assert len(body) == 2
+
+
+def test_health_reporta_la_version_del_modelo(client: TestClient) -> None:
+    """La version del modelo es distinta de la de la API y debe viajar aparte."""
+    body = client.get("/api/v1/health").json()
+
+    assert body["modelVersion"] == "0.0.0-fake"
+    assert body["apiVersion"] != body["modelVersion"]
+
+
+def test_cors_permite_el_origen_del_tablero(client: TestClient) -> None:
+    """Regresion: pydantic normaliza AnyHttpUrl agregando una barra final.
+
+    El navegador manda Origin sin barra y Starlette compara por igualdad
+    exacta, asi que con la barra el tablero quedaba sin datos aunque la API
+    respondiera bien por curl.
+    """
+    response = client.options(
+        "/api/v1/predict",
+        headers={
+            "Origin": "http://localhost:5173",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
+
+
+def test_los_origenes_cors_no_llevan_barra_final() -> None:
+    from app.config import settings
+
+    assert settings.cors_origins
+    assert all(not origen.endswith("/") for origen in settings.cors_origins)

@@ -21,6 +21,7 @@ def health() -> dict:
     return {
         "name": settings.PROJECT_NAME,
         "api_version": __version__,
+        "model_version": artifacts.model_version,
         "model_family": artifacts.model_family,
         "threshold": artifacts.threshold,
         "high_band_threshold": artifacts.high_band_threshold,
@@ -101,7 +102,9 @@ def predict(input_data: schemas.PredictionRequest) -> dict:
         "threshold": artifacts.threshold,
         "high_band_threshold": artifacts.high_band_threshold,
         "references": references,
-        "model_version": __version__,
+        # La version del modelo, no la de la API: es lo que permite rastrear con
+        # que artefacto se produjo una prediccion concreta.
+        "model_version": artifacts.model_version,
     }
 
 

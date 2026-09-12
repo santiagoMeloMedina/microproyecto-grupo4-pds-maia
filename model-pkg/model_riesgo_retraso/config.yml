@@ -1,0 +1,58 @@
+# Configuracion del modelo de riesgo de retraso.
+#
+# Cambiar un valor aqui y volver a correr `tox run -e train` produce un modelo
+# distinto sin tocar una sola linea de codigo. Es el mismo principio del taller 5:
+# el config es el contrato entre el entrenamiento y el servicio.
+
+package_name: model_riesgo_retraso
+
+# --- Datos -----------------------------------------------------------------
+# El CSV no viaja dentro del wheel: son 19 MB versionados con DVC. La ruta se
+# resuelve con la variable AIRLINES_CSV o, en su defecto, contra data/ del repo.
+training_data_file: airlines.csv
+pipeline_save_file: modelo_riesgo_retraso_output_v
+
+target: Delay
+
+# Los seis campos que el tablero le pide al usuario. Toda caracteristica
+# derivada debe poder construirse a partir de estos, o el modelo no seria
+# servible al planear un itinerario futuro.
+features:
+  - Airline
+  - AirportFrom
+  - AirportTo
+  - DayOfWeek
+  - Time
+  - Length
+
+# Campos presentes en el crudo que el modelo de produccion NO usa.
+# Flight quedo fuera tras el experimento controlado de la Entrega 2: su
+# codificacion por objetivo no es estable entre periodos (r = 0,393) y deteriora
+# el AUC en las tres familias.
+temp_features:
+  - Flight
+
+# --- Particion temporal ----------------------------------------------------
+# Dias reconstruidos 0..30. La tasa de retraso se desplaza de 41,0% a 53,1%
+# entre bloques, asi que la particion es temporal y nunca aleatoria.
+dia_fin_entrenamiento: 20
+dia_fin_validacion: 25
+total_dias: 31
+
+# --- Punto de operacion ----------------------------------------------------
+# Elegido por presupuesto de refuerzo del 20% del itinerario, no maximizando F1
+# (que marcaria el 83% de las franjas con un lift de 1,09).
+umbral: 0.5529
+banda_alta: 0.6891
+
+# --- Hiperparametros del ganador -------------------------------------------
+# XGBoost, mejor de los 30 experimentos de su familia.
+# Registrado en MLflow como riesgo-retraso-vuelos version 1.
+random_state: 42
+n_estimators: 200
+max_depth: 8
+learning_rate: 0.012863908101989912
+subsample: 0.6
+colsample_bytree: 1.0
+min_child_weight: 5
+reg_lambda: 10.0

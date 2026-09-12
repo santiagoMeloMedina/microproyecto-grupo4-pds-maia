@@ -1,0 +1,186 @@
+.ranking-page {
+  padding: var(--space-xl) var(--space-lg) var(--space-xxl);
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.ranking-header h1 {
+  margin: 0 0 var(--space-xs);
+  color: var(--ink);
+}
+
+.ranking-header p {
+  margin: 0;
+  max-width: 70ch;
+  color: var(--body-text);
+}
+
+/* --- Filtros --- */
+.ranking-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+}
+
+.ranking-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.ranking-filters select {
+  min-width: 140px;
+  padding: var(--space-xs);
+  font: inherit;
+  color: var(--ink);
+  background: var(--canvas);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+}
+
+.ranking-clear {
+  padding: var(--space-xs) var(--space-md);
+  font: inherit;
+  color: var(--link);
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.ranking-clear:hover {
+  border-color: var(--link);
+}
+
+/* --- Indicadores --- */
+.ranking-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.ranking-kpis article {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  padding: var(--space-md);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.kpi-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* --- Tabla --- */
+/* La tabla desborda en pantallas angostas: el scroll vive en este contenedor
+   para que la pagina nunca desplace horizontalmente. */
+.ranking-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+}
+
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: var(--canvas);
+}
+
+.ranking-table th,
+.ranking-table td {
+  padding: var(--space-xs) var(--space-sm);
+  text-align: left;
+  border-bottom: 1px solid var(--hairline);
+  white-space: nowrap;
+}
+
+.ranking-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.ranking-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ranking-table tbody tr:hover {
+  background: var(--surface-soft);
+}
+
+.ranking-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ranking-table .strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ranking-band {
+  display: inline-block;
+  padding: 2px var(--space-xs);
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  text-transform: capitalize;
+  border: 1px solid transparent;
+}
+
+.ranking-band-alto {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.ranking-band-medio {
+  color: var(--info);
+  border-color: var(--info-border);
+}
+
+.ranking-band-bajo {
+  color: var(--success);
+  border-color: var(--success-border);
+}
+
+/* --- Estados --- */
+.ranking-empty,
+.ranking-error {
+  margin: 0;
+  padding: var(--space-lg);
+  text-align: center;
+  border: 1px dashed var(--hairline);
+  border-radius: var(--radius-md);
+  color: var(--muted);
+}
+
+.ranking-error {
+  color: var(--danger);
+  border-color: var(--danger);
+  border-style: solid;
+}

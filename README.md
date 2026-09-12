@@ -72,7 +72,10 @@ Los reportes y soportes de cada entrega viven en `docs/`:
 - [docs/2nd_delivery/borrador_entrega2.md](docs/2nd_delivery/borrador_entrega2.md) — hallazgos de EDA posteriores a la Entrega 1.
 - [docs/2nd_delivery/mlflow_ec2.md](docs/2nd_delivery/mlflow_ec2.md) — montaje del servidor de MLflow en EC2 y capturas requeridas.
 - [docs/2nd_delivery/ejecutar_en_colab.md](docs/2nd_delivery/ejecutar_en_colab.md) — cómo correr el notebook de modelado en Google Colab con GPU.
-- [docs/3rd_delivery/borrador_entrega3.md](docs/3rd_delivery/borrador_entrega3.md) — borrador de la Entrega 3: API, contenedores y pendientes.
+- [docs/3rd_delivery/reporte_entrega3.md](docs/3rd_delivery/reporte_entrega3.md) — reporte de la Entrega Final: modelos, empaquetamiento, API, tablero y despliegue.
+- [docs/3rd_delivery/manual_usuario.md](docs/3rd_delivery/manual_usuario.md) — manual de usuario del tablero.
+- [docs/3rd_delivery/manual_instalacion.md](docs/3rd_delivery/manual_instalacion.md) — manual de instalación y despliegue.
+- [docs/3rd_delivery/reporte_trabajo_equipo.md](docs/3rd_delivery/reporte_trabajo_equipo.md) — reporte de trabajo en equipo de la Entrega Final.
 - [docs/api_endpoints.md](docs/api_endpoints.md) — documentación de los endpoints de la API: descripción, payload y respuesta de ejemplo.
 
 ## Exploración
@@ -86,10 +89,18 @@ entrenamiento y el tablero. Así el modelo recibe al servir exactamente las mism
 que se entrenó.
 
 ```
-airlines_ml/     preparación de datos, features, modelos y líneas base
-modeling/        notebook de entrenamiento y experimentos (MLflow)
-dashboard/       tablero Dash
+airlines_ml/     experimentación: preparación de datos, features, familias y líneas base
+modeling/        notebook de entrenamiento y 90 experimentos (MLflow)
+model-pkg/       producción: paquete instalable con el modelo ganador
+api/             API de inferencia (FastAPI)
+ui/              tablero React que consume la API
+dashboard/       tablero Dash de la Entrega 2 y tableros descriptivos
 ```
+
+`airlines_ml` y `model-pkg` tienen propósitos distintos: el primero responde *qué modelo elegir* y
+contiene las tres familias; el segundo responde *cuál es el riesgo de este itinerario* y contiene
+solo la configuración ganadora, sin depender del repositorio, de modo que se instale en un
+contenedor con un único `pip install`.
 
 ### 1. Entrenar
 
@@ -113,22 +124,48 @@ python dashboard/app.py
 Queda en http://localhost:8050. Requiere haber ejecutado antes el notebook, que es el que genera el
 modelo y el parquet.
 
-### 3. Levantar la API y el tablero React
+### 3. Levantar el prototipo desplegable (API + tablero React)
 
-El tablero React en [`ui/`](ui/) (predicción de riesgo + visualización de datos) consume el
-modelo a través de una API en [`api/`](api/), en vez de cargarlo directamente como hace
-`dashboard/app.py`. Requiere los mismos artefactos generados en el paso 1.
-
-```bash
-pip install -r api/requirements.txt
-cd api && uvicorn app.main:app --reload --port 8002    # http://localhost:8002/docs
-```
+Es el entregable de la Entrega Final. No requiere ejecutar el notebook ni descargar el dataset: el
+modelo entrenado viaja dentro del wheel en `api/model-package/` y el histórico está versionado en
+`dashboard/data/vuelos.parquet`.
 
 ```bash
-cd ui && npm install && npm run dev                     # http://localhost:5173
+docker compose up --build
 ```
 
-Ver [api/README.md](api/README.md) y [docs/api_endpoints.md](docs/api_endpoints.md) para el detalle de los endpoints.
+| Servicio | Dirección |
+|---|---|
+| Tablero | http://localhost:8080 |
+| API | http://localhost:8002/docs |
+
+Si el puerto 8080 está ocupado, `UI_PORT=8088 docker compose up --build`.
+
+Para desarrollar sin Docker:
+
+```bash
+cd api && tox run -e run      # API en http://localhost:8002
+cd ui  && npm ci && npm run dev   # tablero en http://localhost:5173
+```
+
+Ver el [manual de instalación](docs/3rd_delivery/manual_instalacion.md), [api/README.md](api/README.md)
+y [docs/api_endpoints.md](docs/api_endpoints.md).
+
+### 4. Reentrenar y reempaquetar el modelo
+
+El modelo de producción se distribuye como paquete instalable, construido en
+[`model-pkg/`](model-pkg/). Solo hace falta si se quiere regenerar el artefacto.
+
+```bash
+dvc pull                                 # descarga data/airlines.csv
+
+cd model-pkg
+tox run -e test_package                  # entrena y valida
+python -m build                          # genera dist/*.whl
+cp dist/*.whl ../api/model-package/
+```
+
+Ver [model-pkg/README.md](model-pkg/README.md).
 
 ## Datos y licencia
 
