@@ -7,17 +7,43 @@ export interface PredictionInput {
   length: number
 }
 
-export interface PredictionFactor {
-  key: keyof PredictionInput
-  label: string
-  impact: number
-}
-
 export type RiskLevel = 'bajo' | 'medio' | 'alto'
+
+/** Tasa historica de retraso de un grupo, para contrastar la prediccion. */
+export interface ReferenceRate {
+  label: string
+  rate: number
+}
 
 export interface PredictionResult {
   probability: number
-  riskLevel: RiskLevel
-  factors: PredictionFactor[]
-  notes: string[]
+  /** Banda de accion segun el punto de operacion, no un corte arbitrario. */
+  band: RiskLevel
+  /** Umbral de refuerzo que devuelve la API: por encima, la franja se marca. */
+  threshold: number
+  /** Corte de la banda alta. */
+  highBandThreshold: number
+  references: ReferenceRate[]
+  modelVersion: string
+}
+
+export interface DayOption {
+  value: number
+  label: string
+}
+
+export interface Catalog {
+  airlines: string[]
+  airports: string[]
+  routes: string[]
+  days: DayOption[]
+}
+
+export interface Health {
+  name: string
+  apiVersion: string
+  modelVersion: string
+  modelFamily: string
+  threshold: number
+  highBandThreshold: number
 }

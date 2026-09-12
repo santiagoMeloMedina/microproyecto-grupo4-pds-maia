@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import airlines from '../data/prediction/airlines.json'
-import airports from '../data/prediction/airports.json'
-import daysOfWeek from '../data/prediction/days-of-week.json'
-import type { PredictionInput } from '../types/prediction'
+import airlinesFallback from '../data/prediction/airlines.json'
+import airportsFallback from '../data/prediction/airports.json'
+import daysFallback from '../data/prediction/days-of-week.json'
+import { fetchCatalog } from '../services/predictionService'
+import type { Catalog, PredictionInput } from '../types/prediction'
 import Tooltip from './Tooltip'
 import './PredictionForm.css'
 
@@ -12,13 +13,57 @@ interface PredictionFormProps {
   submitting: boolean
 }
 
+/**
+ * Catalogo de respaldo.
+ *
+ * Si la API no responde, el formulario sigue siendo utilizable con los codigos
+ * que venian en el prototipo. Se reemplaza por el catalogo real en cuanto la
+ * API contesta, que es el que refleja el historico efectivamente cargado.
+ */
+const CATALOGO_RESPALDO: Catalog = {
+  airlines: airlinesFallback,
+  airports: airportsFallback,
+  routes: [],
+  days: daysFallback,
+}
+
+function comoHora(minutos: number): string {
+  const h = Math.floor(minutos / 60) % 24
+  const m = minutos % 60
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+}
+
 function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
-  const [airline, setAirline] = useState(airlines[0])
-  const [airportFrom, setAirportFrom] = useState(airports[0])
-  const [airportTo, setAirportTo] = useState(airports[1])
-  const [dayOfWeek, setDayOfWeek] = useState(daysOfWeek[0].value)
+  const [catalog, setCatalog] = useState<Catalog>(CATALOGO_RESPALDO)
+  const [airline, setAirline] = useState(CATALOGO_RESPALDO.airlines[0])
+  const [airportFrom, setAirportFrom] = useState(CATALOGO_RESPALDO.airports[0])
+  const [airportTo, setAirportTo] = useState(CATALOGO_RESPALDO.airports[1])
+  const [dayOfWeek, setDayOfWeek] = useState(CATALOGO_RESPALDO.days[0].value)
   const [time, setTime] = useState(480)
   const [length, setLength] = useState(120)
+
+  useEffect(() => {
+    let vigente = true
+
+    fetchCatalog()
+      .then((real) => {
+        if (!vigente || real.airlines.length === 0) return
+        setCatalog(real)
+        setAirline((actual) => (real.airlines.includes(actual) ? actual : real.airlines[0]))
+        setAirportFrom((actual) =>
+          real.airports.includes(actual) ? actual : real.airports[0],
+        )
+        setAirportTo((actual) => (real.airports.includes(actual) ? actual : real.airports[1]))
+      })
+      .catch(() => {
+        // Se conserva el catalogo de respaldo; el error de conexion se reporta
+        // al enviar el formulario, que es cuando afecta al usuario.
+      })
+
+    return () => {
+      vigente = false
+    }
+  }, [])
 
   const sameAirport = airportFrom === airportTo
 
@@ -36,7 +81,7 @@ function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
           <Tooltip label="Acerca de Aerolínea" text="Código IATA de la aerolínea que opera el vuelo." />
         </span>
         <select id="airline" value={airline} onChange={(e) => setAirline(e.target.value)}>
-          {airlines.map((code) => (
+          {catalog.airlines.map((code) => (
             <option key={code} value={code}>
               {code}
             </option>
@@ -54,7 +99,7 @@ function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
           value={airportFrom}
           onChange={(e) => setAirportFrom(e.target.value)}
         >
-          {airports.map((code) => (
+          {catalog.airports.map((code) => (
             <option key={code} value={code}>
               {code}
             </option>
@@ -67,8 +112,12 @@ function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
           <label htmlFor="airportTo">Destino</label>
           <Tooltip label="Acerca de Destino" text="Código IATA del aeropuerto de llegada." />
         </span>
-        <select id="airportTo" value={airportTo} onChange={(e) => setAirportTo(e.target.value)}>
-          {airports.map((code) => (
+        <select
+          id="airportTo"
+          value={airportTo}
+          onChange={(e) => setAirportTo(e.target.value)}
+        >
+          {catalog.airports.map((code) => (
             <option key={code} value={code}>
               {code}
             </option>
@@ -91,7 +140,7 @@ function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
           value={dayOfWeek}
           onChange={(e) => setDayOfWeek(Number(e.target.value))}
         >
-          {daysOfWeek.map((day) => (
+          {catalog.days.map((day) => (
             <option key={day.value} value={day.value}>
               {day.label}
             </option>
@@ -115,6 +164,7 @@ function PredictionForm({ onSubmit, submitting }: PredictionFormProps) {
           value={time}
           onChange={(e) => setTime(Number(e.target.value))}
         />
+        <p className="prediction-field-hint">Equivale a las {comoHora(time)}.</p>
       </div>
 
       <div className="prediction-field">

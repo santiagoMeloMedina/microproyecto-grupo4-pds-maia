@@ -1,0 +1,54 @@
+.reference-rates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.reference-row {
+  display: grid;
+  grid-template-columns: 170px 1fr 52px;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 13px;
+}
+
+.reference-label {
+  color: var(--body-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reference-track {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--hairline);
+  overflow: hidden;
+}
+
+.reference-bar {
+  display: block;
+  height: 100%;
+  background: var(--border-strong);
+  border-radius: 5px;
+}
+
+.reference-value {
+  text-align: right;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* El itinerario consultado se destaca: las demas filas son su contexto. */
+.reference-row-current .reference-label,
+.reference-row-current .reference-value {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.reference-row-current .reference-bar {
+  background: var(--link);
+}
