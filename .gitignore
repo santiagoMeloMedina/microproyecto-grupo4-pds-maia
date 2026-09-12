@@ -14,7 +14,11 @@ data/*
 models/*
 !models/.gitkeep
 !models/metadata.json
-dashboard/data/
+dashboard/data/*
+# El historico si se versiona: la API y el contenedor lo necesitan desde un clon
+# limpio, y reconstruirlo exige el CSV de 19 MB que vive en DVC. Se regenera con
+# `python scripts/generar_datos_tablero.py`.
+!dashboard/data/vuelos.parquet
 
 # Configuracion local: cada quien apunta a su propio servidor de MLflow.
 # La plantilla versionada es .env.example
