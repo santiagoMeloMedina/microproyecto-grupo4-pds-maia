@@ -28,6 +28,17 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = "Airline Delay Risk API"
 
+    @property
+    def cors_origins(self) -> List[str]:
+        """Origenes permitidos, sin la barra final.
+
+        pydantic normaliza AnyHttpUrl agregando '/' al final, pero el navegador
+        manda el encabezado Origin sin ella y Starlette compara por igualdad
+        exacta. Con la barra, el preflight de toda peticion del tablero falla y
+        la interfaz queda sin datos aunque la API responda bien por curl.
+        """
+        return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS]
+
 
 class InterceptHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:  # pragma: no cover
