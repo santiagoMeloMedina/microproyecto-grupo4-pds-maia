@@ -73,6 +73,7 @@ Los reportes y soportes de cada entrega viven en `docs/`:
 - [docs/2nd_delivery/mlflow_ec2.md](docs/2nd_delivery/mlflow_ec2.md) — montaje del servidor de MLflow en EC2 y capturas requeridas.
 - [docs/2nd_delivery/ejecutar_en_colab.md](docs/2nd_delivery/ejecutar_en_colab.md) — cómo correr el notebook de modelado en Google Colab con GPU.
 - [docs/3rd_delivery/borrador_entrega3.md](docs/3rd_delivery/borrador_entrega3.md) — borrador de la Entrega 3: API, contenedores y pendientes.
+- [docs/api_endpoints.md](docs/api_endpoints.md) — documentación de los endpoints de la API: descripción, payload y respuesta de ejemplo.
 
 ## Exploración
 
@@ -111,6 +112,23 @@ python dashboard/app.py
 
 Queda en http://localhost:8050. Requiere haber ejecutado antes el notebook, que es el que genera el
 modelo y el parquet.
+
+### 3. Levantar la API y el tablero React
+
+El tablero React en [`ui/`](ui/) (predicción de riesgo + visualización de datos) consume el
+modelo a través de una API en [`api/`](api/), en vez de cargarlo directamente como hace
+`dashboard/app.py`. Requiere los mismos artefactos generados en el paso 1.
+
+```bash
+pip install -r api/requirements.txt
+cd api && uvicorn app.main:app --reload --port 8002    # http://localhost:8002/docs
+```
+
+```bash
+cd ui && npm install && npm run dev                     # http://localhost:5173
+```
+
+Ver [api/README.md](api/README.md) y [docs/api_endpoints.md](docs/api_endpoints.md) para el detalle de los endpoints.
 
 ## Datos y licencia
 

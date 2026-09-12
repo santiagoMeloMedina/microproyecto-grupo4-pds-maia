@@ -1,0 +1,20 @@
+# Dependencias de la API de riesgo de retraso (api/app).
+#
+# La API carga el mismo modelo y los mismos datos que dashboard/app.py (Dash),
+# por eso necesita scikit-learn/xgboost para deserializar el pipeline y
+# pyarrow para leer dashboard/data/vuelos.parquet. Genera esos artefactos con
+# modeling/katherin-modelos-entrega2.ipynb antes de levantar la API.
+uvicorn>=0.20.0,<0.30.0
+fastapi>=0.100.0,<1.0.0
+pydantic>=2.0.0,<3.0.0
+pydantic-settings>=2.0.0,<3.0.0
+python-multipart>=0.0.5,<0.1.0
+typing_extensions>=4.2.0,<5.0.0
+loguru>=0.5.3,<1.0.0
+pandas==2.3.3
+numpy==2.4.6
+scikit-learn==1.9.0
+scipy==1.17.1
+xgboost==3.2.0
+joblib==1.5.3
+pyarrow==25.0.1
