@@ -96,14 +96,29 @@ def create_and_validate_config(parsed_config: YAML | None = None) -> Config:
 def training_data_path() -> Path:
     """Ubica data/airlines.csv.
 
-    El dataset no viaja dentro del wheel, asi que se resuelve por variable de
-    entorno (util en Docker y en Colab) o contra la raiz del repositorio, que es
-    donde esta cuando se entrena con `tox run -e train`.
+    El dataset no viaja dentro del wheel: son 19 MB versionados con DVC. La ruta
+    se resuelve en tres pasos porque el paquete se usa de dos formas distintas.
+    Desde el codigo fuente, `ROOT.parent` es la raiz del repositorio; pero una
+    vez instalado con pip, ROOT apunta a site-packages y esa ruta no existe, asi
+    que se prueba tambien contra el directorio de trabajo.
     """
     ruta_env = os.getenv("AIRLINES_CSV")
     if ruta_env:
         return Path(ruta_env)
-    return ROOT.parent / "data" / config.app_config.training_data_file
+
+    nombre = config.app_config.training_data_file
+    candidatos = [
+        ROOT.parent / "data" / nombre,        # ejecutando desde model-pkg/
+        Path.cwd() / "data" / nombre,         # ejecutando desde la raiz del repo
+        Path.cwd().parent / "data" / nombre,  # ejecutando desde un subdirectorio
+    ]
+    for candidato in candidatos:
+        if candidato.exists():
+            return candidato
+
+    # Ninguno existe: se devuelve el primero para que el mensaje de error de
+    # cargar_dataset apunte a una ruta comprensible.
+    return candidatos[0]
 
 
 config = create_and_validate_config()
