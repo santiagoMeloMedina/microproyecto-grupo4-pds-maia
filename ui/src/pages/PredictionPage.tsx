@@ -2,20 +2,33 @@ import { useState } from 'react'
 import PredictionForm from '../components/PredictionForm'
 import RiskGauge from '../components/RiskGauge'
 import ThresholdBar from '../components/ThresholdBar'
-import FactorImpactChart from '../components/FactorImpactChart'
+import ReferenceRates from '../components/ReferenceRates'
 import { predictDelay } from '../services/predictionService'
+import { ApiError } from '../services/api'
 import type { PredictionInput, PredictionResult } from '../types/prediction'
 import './PredictionPage.css'
+
+const ACCION: Record<string, string> = {
+  bajo: 'Sin refuerzo. El itinerario queda por debajo del umbral de priorización.',
+  medio: 'Refuerzo recomendado. Supera el umbral del presupuesto de refuerzo del 20%.',
+  alto: 'Refuerzo prioritario. Está en la banda de mayor riesgo estimado.',
+}
 
 function PredictionPage() {
   const [result, setResult] = useState<PredictionResult | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function handleSubmit(input: PredictionInput) {
     setSubmitting(true)
+    setError(null)
     try {
-      const prediction = await predictDelay(input)
-      setResult(prediction)
+      setResult(await predictDelay(input))
+    } catch (err) {
+      setResult(null)
+      setError(
+        err instanceof ApiError ? err.message : 'Ocurrió un error inesperado al predecir.',
+      )
     } finally {
       setSubmitting(false)
     }
@@ -27,7 +40,8 @@ function PredictionPage() {
         <h1>Predicción de riesgo de retraso</h1>
         <p>
           Ingresa el itinerario programado para consultar la probabilidad de retraso
-          estimada y qué aspectos del itinerario influyen más en ese resultado.
+          estimada por el modelo y contrastarla con el histórico de su aerolínea, su
+          ruta y su franja horaria.
         </p>
       </header>
 
@@ -39,32 +53,46 @@ function PredictionPage() {
 
         <section className="prediction-panel prediction-results">
           <h2>Resultado</h2>
-          {!result && !submitting && (
+
+          {!result && !submitting && !error && (
             <p className="prediction-empty">
               Completa el itinerario y calcula el riesgo para ver el resultado aquí.
             </p>
           )}
-          {submitting && <p className="prediction-empty">Calculando predicción...</p>}
+
+          {submitting && <p className="prediction-empty">Consultando el modelo...</p>}
+
+          {error && !submitting && <p className="prediction-error">{error}</p>}
+
           {result && !submitting && (
             <>
-              {result.notes.map((note) => (
-                <p className="prediction-disclaimer" key={note}>
-                  {note}
-                </p>
-              ))}
-
               <div className="prediction-result-top">
-                <RiskGauge probability={result.probability} riskLevel={result.riskLevel} />
+                <RiskGauge probability={result.probability} riskLevel={result.band} />
                 <div className="prediction-result-threshold">
-                  <h3>Umbral de riesgo</h3>
-                  <ThresholdBar probability={result.probability} />
+                  <h3>Punto de operación</h3>
+                  <ThresholdBar
+                    probability={result.probability}
+                    threshold={result.threshold}
+                    highBandThreshold={result.highBandThreshold}
+                  />
+                  <p className="prediction-action">{ACCION[result.band]}</p>
                 </div>
               </div>
 
               <div className="prediction-result-factors">
-                <h3>Aspectos con mayor influencia en este resultado</h3>
-                <FactorImpactChart factors={result.factors} />
+                <h3>Comparación con el histórico</h3>
+                <ReferenceRates
+                  references={result.references}
+                  probability={result.probability}
+                />
               </div>
+
+              <p className="prediction-disclaimer">
+                Estimado con el modelo <code>model_riesgo_retraso</code> v
+                {result.modelVersion}, XGBoost entrenado sobre los días 0–24 del
+                histórico. La probabilidad es de retraso del vuelo, no una predicción
+                de su duración.
+              </p>
             </>
           )}
         </section>

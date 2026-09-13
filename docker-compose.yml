@@ -1,0 +1,53 @@
+# Despliegue del prototipo completo: API de inferencia y tablero.
+#
+#   docker compose up --build
+#
+#   Tablero : http://localhost:8080
+#   API     : http://localhost:8002/docs
+#
+# Si el 8080 esta ocupado, se cambia con UI_PORT, que ajusta tambien los
+# origenes permitidos por CORS:
+#
+#   UI_PORT=8088 docker compose up --build
+#
+# Para desplegar en una maquina remota (por ejemplo una instancia EC2), basta
+# definir PUBLIC_HOST con su IP publica antes de construir, de modo que el
+# tablero apunte a la API por esa direccion y no a localhost:
+#
+#   PUBLIC_HOST=http://54.123.45.67:8002 docker compose up --build -d
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    image: airlines-api:0.1.0
+    container_name: airlines-api
+    ports:
+      - "8002:8002"
+    environment:
+      # Origenes desde los que el navegador llamara a la API. Debe incluir la
+      # direccion con la que se sirve el tablero, o el preflight falla y la
+      # interfaz queda vacia aunque la API responda. Se deriva de UI_PORT para
+      # que cambiar el puerto del tablero no deje la API rechazandolo.
+      BACKEND_CORS_ORIGINS: '["http://localhost:${UI_PORT:-8080}","http://127.0.0.1:${UI_PORT:-8080}"]'
+    restart: unless-stopped
+
+  ui:
+    build:
+      context: ./ui
+      args:
+        # Vite congela esta URL dentro del bundle durante el build.
+        VITE_API_URL: ${PUBLIC_HOST:-http://localhost:8002}
+    image: airlines-ui:0.1.0
+    container_name: airlines-ui
+    ports:
+      # Configurable: en Windows el 8080 suele estar ocupado por otro servicio.
+      #   UI_PORT=8088 docker compose up --build
+      - "${UI_PORT:-8080}:80"
+    depends_on:
+      api:
+        # Espera a que el modelo este cargado y las franjas puntuadas, no solo
+        # a que el contenedor arranque.
+        condition: service_healthy
+    restart: unless-stopped

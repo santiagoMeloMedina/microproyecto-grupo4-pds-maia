@@ -1,62 +1,48 @@
-import type {
-  PredictionFactor,
-  PredictionInput,
-  PredictionResult,
-  RiskLevel,
-} from '../types/prediction'
+import { query, request } from './api'
+import type { Catalog, Health, PredictionInput, PredictionResult } from '../types/prediction'
+import type { ScheduleSlot, SlotFilters, SlotsSummary } from '../types/slots'
 
-function hashToUnit(value: string): number {
-  let hash = 0
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash * 31 + value.charCodeAt(i)) | 0
-  }
-  return (Math.abs(hash) % 1000) / 1000
-}
-
-function timeOfDayFactor(minutesSinceMidnight: number): number {
-  const hour = (minutesSinceMidnight / 60) % 24
-  return (1 - Math.cos(((hour - 4) / 24) * 2 * Math.PI)) / 2
-}
-
-function riskLevelFor(probability: number): RiskLevel {
-  if (probability < 0.3) return 'bajo'
-  if (probability < 0.6) return 'medio'
-  return 'alto'
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value))
-}
-
+/**
+ * Riesgo de retraso de un itinerario, estimado por el modelo empaquetado.
+ *
+ * La API expone el XGBoost ganador de los 90 experimentos de la Entrega 2,
+ * instalado como paquete `model_riesgo_retraso`. La respuesta trae tambien el
+ * umbral de operacion vigente, de modo que la interfaz no tenga que suponer
+ * donde empieza cada banda de riesgo.
+ */
 export async function predictDelay(input: PredictionInput): Promise<PredictionResult> {
-  const timeFactor = timeOfDayFactor(input.time)
-  const airlineFactor = hashToUnit(input.airline)
-  const routeFactor = (hashToUnit(input.airportFrom) + hashToUnit(input.airportTo)) / 2
-  const dayFactor = hashToUnit(String(input.dayOfWeek))
-  const lengthFactor = clamp(input.length / 400, 0, 1)
+  return request<PredictionResult>('/predict', {
+    method: 'POST',
+    body: JSON.stringify({
+      airline: input.airline,
+      airportFrom: input.airportFrom,
+      airportTo: input.airportTo,
+      dayOfWeek: input.dayOfWeek,
+      time: input.time,
+      length: input.length,
+    }),
+  })
+}
 
-  const weighted: PredictionFactor[] = [
-    { key: 'time', label: 'Franja horaria', impact: timeFactor * 0.3 },
-    { key: 'airline', label: 'Aerolínea', impact: airlineFactor * 0.2 },
-    { key: 'airportFrom', label: 'Ruta (origen-destino)', impact: routeFactor * 0.25 },
-    { key: 'dayOfWeek', label: 'Día de la semana', impact: dayFactor * 0.15 },
-    { key: 'length', label: 'Duración del vuelo', impact: lengthFactor * 0.1 },
-  ]
+/** Aerolineas, aeropuertos, rutas frecuentes y dias validos del historico. */
+export async function fetchCatalog(): Promise<Catalog> {
+  return request<Catalog>('/catalog')
+}
 
-  const probability = clamp(
-    weighted.reduce((total, factor) => total + factor.impact, 0),
-    0.02,
-    0.98,
-  )
+/** Estado de la API y version del modelo que esta sirviendo. */
+export async function fetchHealth(): Promise<Health> {
+  return request<Health>('/health')
+}
 
-  const factors = [...weighted].sort((a, b) => b.impact - a.impact)
+/** Franjas de itinerario ordenadas por riesgo estimado, de mayor a menor. */
+export async function fetchScheduleSlots(
+  filters: SlotFilters = {},
+  limit = 20,
+): Promise<ScheduleSlot[]> {
+  return request<ScheduleSlot[]>(`/schedule-slots${query({ ...filters, limit })}`)
+}
 
-  await new Promise((resolve) => setTimeout(resolve, 300))
-
-  return {
-    probability,
-    riskLevel: riskLevelFor(probability),
-    factors,
-    notes: ['Resultado simulado, pendiente de integración con la API real del modelo.'],
-  }
+/** Indicadores de la seleccion activa. */
+export async function fetchSlotsSummary(filters: SlotFilters = {}): Promise<SlotsSummary> {
+  return request<SlotsSummary>(`/schedule-slots/summary${query({ ...filters })}`)
 }
