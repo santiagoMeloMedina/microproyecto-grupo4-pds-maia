@@ -19,9 +19,10 @@ Todas las respuestas JSON usan **camelCase** (los modelos internos son snake_cas
 {
   "name": "Airline Delay Risk API",
   "apiVersion": "0.1.0",
-  "modelFamily": "gradient_boosting",
-  "threshold": 0.5,
-  "highBandThreshold": 0.65
+  "modelVersion": "0.0.1",
+  "modelFamily": "xgboost",
+  "threshold": 0.5529,
+  "highBandThreshold": 0.6891
 }
 ```
 
@@ -77,25 +78,25 @@ Campos:
 - `time` (int, requerido): minutos desde medianoche, entre 0 y 1439.
 - `length` (int, requerido): duración estimada del vuelo en minutos, > 0.
 
-**Respuesta 200** (`PredictionResult`):
+**Respuesta 200 ilustrativa** (`PredictionResult`):
 ```json
 {
   "probability": 0.42,
   "band": "medio",
-  "threshold": 0.5,
-  "highBandThreshold": 0.65,
+  "threshold": 0.5529,
+  "highBandThreshold": 0.6891,
   "references": [
     { "label": "Historico WN", "rate": 0.38 },
     { "label": "Historico DAL-HOU", "rate": 0.35 },
     { "label": "Historico franja 12-18", "rate": 0.4 },
     { "label": "Media global", "rate": 0.37 }
   ],
-  "modelVersion": "0.1.0"
+  "modelVersion": "0.0.1"
 }
 ```
 
 **Errores:**
-- `400 Bad Request` si el modelo rechaza el input (p.ej. categoría no vista en `airline`/aeropuertos):
+- `400 Bad Request` si ocurre un error durante la inferencia del modelo:
   ```json
   { "detail": "<mensaje del error original>" }
   ```
@@ -203,7 +204,9 @@ GET /api/v1/schedule-slots/breakdown?by=day&airline=WN&top=7
 
 ## GET `/api/v1/schedule-slots/drift`
 
-**Qué hace:** devuelve la evolución diaria (por fecha calendario) de la tasa de retraso observada en la selección activa. Sirve para detectar la deriva (aging) del modelo en el tiempo.
+**Qué hace:** devuelve la evolución de la tasa de retraso observada por índice
+temporal reconstruido. El dataset no contiene fechas calendario; `day` recorre
+los bloques diarios inferidos de 0 a 30. Sirve para observar deriva temporal.
 
 **Query params** (todos opcionales): `airline`, `route`, `dayOfWeek` (1–7), `slot`.
 
@@ -215,8 +218,8 @@ GET /api/v1/schedule-slots/drift?route=DAL-HOU
 **Respuesta 200** (lista de `DriftPoint`):
 ```json
 [
-  { "day": 20240101, "rate": 0.35 },
-  { "day": 20240102, "rate": 0.41 }
+  { "day": 0, "rate": 0.35 },
+  { "day": 1, "rate": 0.41 }
 ]
 ```
 Si no hay vuelos en la selección, devuelve `[]`.

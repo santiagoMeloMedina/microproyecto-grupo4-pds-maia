@@ -8,9 +8,10 @@ Requisitos: Python 3.
 make install
 ```
 
-En sistemas basados en Ubuntu (24.04), `make install` primero instala las dependencias de sistema necesarias vía `apt` (`make`, `python3-pip`, `python3-venv`, `libgomp1` — esta última requerida por LightGBM) antes de crear el entorno virtual. Este paso se salta automáticamente si `apt-get` no está disponible.
+En sistemas basados en Ubuntu (24.04), `make install` primero instala las dependencias de sistema necesarias vía `apt` (`make`, `python3-pip`, `python3-venv`, `libgomp1` — esta última requerida por las bibliotecas de árboles usadas en los experimentos y por XGBoost en la solución final) antes de crear el entorno virtual. Este paso se salta automáticamente si `apt-get` no está disponible.
 
-Luego crea un entorno virtual en `.venv/` e instala `dvc[s3]` dentro de él.
+Luego crea un entorno virtual en `.venv/` e instala las dependencias de
+exploración, modelado y `dvc[s3]` dentro de él.
 
 `make install` no deja el entorno activado en tu shell. Para poder usar los comandos instalados (por ejemplo `dvc`), actívalo manualmente después:
 
@@ -143,15 +144,41 @@ Si el puerto 8080 está ocupado, `UI_PORT=8088 docker compose up --build`.
 
 Para desarrollar sin Docker:
 
+Terminal 1:
+
 ```bash
-cd api && tox run -e run      # API en http://localhost:8002
-cd ui  && npm ci && npm run dev   # tablero en http://localhost:5173
+(cd api && tox run -e run)    # API en http://localhost:8002
+```
+
+Terminal 2:
+
+```bash
+(cd ui && npm ci && npm run dev)  # tablero en http://localhost:5173
 ```
 
 Ver el [manual de instalación](docs/3rd_delivery/manual_instalacion.md), [api/README.md](api/README.md)
 y [docs/api_endpoints.md](docs/api_endpoints.md).
 
-### 4. Reentrenar y reempaquetar el modelo
+### 4. Desplegar en AWS con Terraform y ECS
+
+El PR #13 incorporó infraestructura como código para crear repositorios ECR, un
+clúster ECS sobre EC2, servicios independientes para API y tablero, IP elástica
+y logs en CloudWatch.
+
+```bash
+cd infra
+cp .env.example .env
+# editar VPC_ID y SUBNET_ID
+cd ..
+./infra/scripts/build_and_push.sh
+```
+
+Requiere Terraform 1.5+, AWS CLI autenticada y Docker. Ver el procedimiento,
+las verificaciones, evidencias y limpieza de recursos en el
+[manual de instalación](docs/3rd_delivery/manual_instalacion.md) y los detalles
+técnicos en [infra/README.md](infra/README.md).
+
+### 5. Reentrenar y reempaquetar el modelo
 
 El modelo de producción se distribuye como paquete instalable, construido en
 [`model-pkg/`](model-pkg/). Solo hace falta si se quiere regenerar el artefacto.
@@ -160,6 +187,7 @@ El modelo de producción se distribuye como paquete instalable, construido en
 dvc pull                                 # descarga data/airlines.csv
 
 cd model-pkg
+python -m pip install tox build
 tox run -e test_package                  # entrena y valida
 python -m build                          # genera dist/*.whl
 cp dist/*.whl ../api/model-package/

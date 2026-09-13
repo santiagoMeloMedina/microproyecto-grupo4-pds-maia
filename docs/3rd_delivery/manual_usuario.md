@@ -5,12 +5,13 @@ itinerario y necesita decidir **dónde concentrar recursos de refuerzo la próxi
 semana**, no para consultar el estado de un vuelo en curso.
 
 Para instalarlo, ver el [manual de instalación](manual_instalacion.md). Una vez
-levantado, el tablero está en `http://localhost:8080` (o el puerto que se haya
-configurado).
+levantado con Docker Compose, el tablero está en `http://localhost:8080` (o el
+puerto configurado). En AWS se abre la dirección `ui_url` informada por
+Terraform.
 
 ## Acceso al despliegue
 
-El prototipo desplegado para la entrega está disponible en:
+El prototipo de la entrega se verificó en las siguientes direcciones:
 
 - **Tablero:** http://184.193.113.29
 - **Estado de la API:** http://184.193.113.29:8002/api/v1/health
@@ -18,9 +19,10 @@ El prototipo desplegado para la entrega está disponible en:
 
 El acceso fue verificado el **12 de septiembre de 2026**: el tablero respondió
 correctamente y la API reportó la versión `0.1.0`, con el modelo XGBoost
-`0.0.1`. La dirección pertenece a un entorno de AWS Academy y puede dejar de
-estar disponible cuando finalice la sesión del laboratorio; esto no afecta la
-instalación local descrita en el manual de instalación.
+`0.0.1`. Estas URL son evidencia histórica, no un servicio permanente: la
+dirección pertenece a un entorno de AWS Academy y puede dejar de responder
+cuando finalice la sesión del laboratorio. Esto no afecta la instalación local
+ni la reproducción con Terraform descritas en el manual de instalación.
 
 ![Interfaz inicial del tablero](images/e3_00_interfaz_inicial.png)
 
@@ -220,8 +222,9 @@ pronóstico absoluto de frecuencia.
 Si la interfaz carga pero las secciones aparecen vacías o con un mensaje de error,
 lo más probable es que la API no esté disponible o que el navegador esté
 bloqueando las consultas. En una instalación local, verificar que
-`http://localhost:8002/api/v1/health` responda. Para el despliegue de la entrega,
-verificar `http://184.193.113.29:8002/api/v1/health`.
+`http://localhost:8002/api/v1/health` responda. En AWS, verificar el endpoint
+`api_url/api/v1/health` informado por Terraform; la IP histórica de la entrega
+puede haber expirado con la sesión del laboratorio.
 
 Una respuesta correcta muestra, entre otros datos, `apiVersion`, `modelVersion`,
 `modelFamily`, `threshold` y `highBandThreshold`. Si el endpoint no responde, el
