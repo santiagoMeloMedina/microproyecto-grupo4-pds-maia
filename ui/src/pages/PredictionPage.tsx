@@ -46,44 +46,6 @@ function PredictionPage() {
       </header>
 
       <div className="prediction-layout">
-        {submitting && (
-          <section className="prediction-panel prediction-loading">
-            <h2>Resultado</h2>
-            <div className="loading-spinner" role="status" aria-label="Calculando predicción" />
-            <p className="prediction-empty">Calculando predicción...</p>
-          </section>
-        )}
-
-        {!submitting && result && (
-          <section className="prediction-panel prediction-results">
-            <h2>Resultado</h2>
-
-            {result.notes.map((note) => (
-              <p className="prediction-disclaimer" key={note}>
-                {note}
-              </p>
-            ))}
-
-            <div className="prediction-result-top">
-              <RiskGauge probability={result.probability} riskLevel={result.riskLevel} />
-              <div className="prediction-result-threshold">
-                <h3>Umbral de riesgo</h3>
-                <ThresholdBar probability={result.probability} />
-              </div>
-            </div>
-
-            <div className="prediction-result-factors">
-              <h3>Aspectos con mayor influencia en este resultado</h3>
-              <FactorImpactChart factors={result.factors} />
-            </div>
-          </section>
-        )}
-
-        <section className="prediction-panel">
-          <h2>Itinerario</h2>
-          <PredictionForm onSubmit={handleSubmit} submitting={submitting} />
-        </section>
-
         <section className="prediction-panel prediction-results">
           <h2>Resultado</h2>
 
@@ -93,7 +55,16 @@ function PredictionPage() {
             </p>
           )}
 
-          {submitting && <p className="prediction-empty">Consultando el modelo...</p>}
+          {submitting && (
+            <div className="prediction-loading">
+              <div
+                className="loading-spinner"
+                role="status"
+                aria-label="Calculando predicción"
+              />
+              <p className="prediction-empty">Consultando el modelo...</p>
+            </div>
+          )}
 
           {error && !submitting && <p className="prediction-error">{error}</p>}
 
@@ -128,6 +99,11 @@ function PredictionPage() {
               </p>
             </>
           )}
+        </section>
+
+        <section className="prediction-panel">
+          <h2>Itinerario</h2>
+          <PredictionForm onSubmit={handleSubmit} submitting={submitting} />
         </section>
       </div>
     </main>

@@ -1,0 +1,10 @@
+# Copiar a terraform.tfvars y ajustar.
+#   cp terraform.tfvars.example terraform.tfvars
+
+vpc_id    = "vpc-xxxxxxxxxxxxxxxxx"
+subnet_id = "subnet-xxxxxxxxxxxxxxxxx" # debe ser una subnet publica (con ruta a un Internet Gateway)
+
+# aws_region      = "us-east-1"
+# project_name    = "airlines-delay"
+# key_name        = "mi-key-pair" # null desactiva el acceso SSH
+# ssh_ingress_cidr = "203.0.113.10/32"
