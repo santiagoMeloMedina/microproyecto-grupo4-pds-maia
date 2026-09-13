@@ -46,11 +46,6 @@ function PredictionPage() {
       </header>
 
       <div className="prediction-layout">
-        <section className="prediction-panel">
-          <h2>Itinerario</h2>
-          <PredictionForm onSubmit={handleSubmit} submitting={submitting} />
-        </section>
-
         <section className="prediction-panel prediction-results">
           <h2>Resultado</h2>
 
@@ -60,7 +55,16 @@ function PredictionPage() {
             </p>
           )}
 
-          {submitting && <p className="prediction-empty">Consultando el modelo...</p>}
+          {submitting && (
+            <div className="prediction-loading">
+              <div
+                className="loading-spinner"
+                role="status"
+                aria-label="Calculando predicción"
+              />
+              <p className="prediction-empty">Consultando el modelo...</p>
+            </div>
+          )}
 
           {error && !submitting && <p className="prediction-error">{error}</p>}
 
@@ -95,6 +99,11 @@ function PredictionPage() {
               </p>
             </>
           )}
+        </section>
+
+        <section className="prediction-panel">
+          <h2>Itinerario</h2>
+          <PredictionForm onSubmit={handleSubmit} submitting={submitting} />
         </section>
       </div>
     </main>
