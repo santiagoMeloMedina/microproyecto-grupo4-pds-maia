@@ -12,7 +12,9 @@ Repositorio: `https://github.com/santiagoMeloMedina/microproyecto-grupo4-pds-mai
 tripulación para los siguientes trayectos, de modo que una demora temprana se propaga en cascada por
 la red. Esa propagación se observa en los datos —la tasa de retraso crece de forma sostenida a lo
 largo del día— y convierte el problema en una cuestión de **diseño de itinerario**, no solo de
-reacción operativa.
+reacción operativa. Así, para los equipos de planeación no basta con conocer la tasa global de
+retraso: necesitan identificar anticipadamente qué combinaciones recurrentes de aerolínea, ruta, día
+y horario presentan mayor exposición, con el fin de priorizar recursos operativos limitados.
 
 **Pregunta de negocio.**
 
@@ -20,40 +22,70 @@ reacción operativa.
 > retraso, de modo que el equipo de planeación pueda reforzar recursos y ajustar márgenes de
 > conexión en los itinerarios más expuestos?**
 
-El usuario es el **equipo de planeación de red**; el momento, la construcción del itinerario
-estacional, no la mañana del vuelo; la decisión, dónde asignar recursos limitados: personal en
-tierra, holgura en la rotación de aeronaves y márgenes de conexión.
+**Usuario y decisión.** La solución está dirigida principalmente al equipo de planeación de red. Su
+propósito es apoyar decisiones previas a la operación, como asignar personal de apoyo, revisar
+márgenes de conexión y priorizar itinerarios que requieren mayor seguimiento. El sistema no
+reemplaza la decisión del usuario: organiza las franjas según su riesgo estimado y aporta contexto
+histórico para interpretarlas.
 
-**Alcance.** Con aerolínea, ruta, día, hora y duración no se estima el riesgo de un vuelo concreto de
-mañana, sino el de una **franja de itinerario que se repite igual todas las semanas**. Quedan fuera
-clima, estado de la aeronave, tráfico en tiempo real e integración con sistemas aeroportuarios.
+**Solución desarrollada.** Se implementó un prototipo funcional compuesto por un modelo supervisado
+XGBoost empaquetado, una API de inferencia desarrollada con FastAPI y un tablero web en React. El
+usuario puede consultar las franjas de itinerario con mayor riesgo, aplicar filtros operativos y
+estimar el riesgo de una combinación específica. El tablero consume las predicciones y los
+parámetros del modelo mediante la API; además, integra visualizaciones descriptivas para
+contextualizar los patrones históricos de retraso. La solución puede desplegarse mediante
+contenedores Docker coordinados con Docker Compose.
 
-**Datos.** Dataset público *Airlines* (OpenML id 1169, licencia ODC-PDDL), versionado con DVC:
-539.383 vuelos domésticos de 18 aerolíneas entre 293 aeropuertos, con 8 variables y `Delay`
-(retraso sí/no) como objetivo, 44,5% de casos positivos. No hay valores faltantes; `Delay` es
-estrictamente binaria y `Time` se mantiene en el rango horario válido. La única inconsistencia física
-fueron 4 vuelos con duración registrada de 0 minutos, descartados por imposibles, de modo que el
-conjunto de trabajo quedó en 539.379 vuelos.
+**Conjunto de datos.** Se utilizó el conjunto público *Airlines* de OpenML (OpenML id 1169, licencia
+ODC-PDDL), versionado con DVC, que contiene 539.383 registros de vuelos domésticos de 18 aerolíneas
+entre 293 aeropuertos, y 8 variables. Después de retirar cuatro registros con duración inválida (0
+minutos), el conjunto de análisis quedó conformado por 539.379 vuelos. La variable objetivo `Delay`
+indica si ocurrió un retraso. El periodo se dividió temporalmente en entrenamiento, validación y
+prueba para evaluar el desempeño sobre observaciones posteriores a las utilizadas durante el ajuste.
 
-**Registros repetidos.** Se identificaron 216.618 filas exactamente repetidas que se decidió **no**
-eliminar. De las 185.451 claves de itinerario que aparecen más de una vez, 95.373 —el 51,4%—
-registran resultados contradictorios de `Delay`. Esa contradicción demuestra que no son errores de
-captura sino ocurrencias distintas de vuelos programados recurrentes: eliminarlas habría borrado la
-frecuencia real de operación, que es una señal predictiva legítima.
+Con respecto a la entrega anterior, no se incorporaron nuevas fuentes de datos para entrenamiento.
+Los principales cambios estuvieron orientados a la preparación de artefactos destinados al
+despliegue de la solución. Adicionalmente, se identificó la necesidad de versionar mediante DVC tanto
+el modelo ganador como el conjunto de datos derivado utilizado por el tablero, con el fin de cumplir
+los requisitos de trazabilidad y reproducibilidad del proyecto.
 
-**Estructura temporal.** Aunque el conjunto no contiene una fecha explícita, el orden de las filas
-permitió reconstruir 31 días consecutivos. La tasa de retraso pasa de 41,0% en el bloque inicial a
-53,1% en el final, por lo que se adoptó una partición temporal y nunca aleatoria.
+**Registros repetidos.** Se identificaron 216.618 filas exactamente repetidas que se conservaron. De
+las 185.451 combinaciones de itinerario que aparecen más de una vez, 95.373, equivalentes al 51,4%,
+presentan resultados diferentes en `Delay`. Esto indica que una misma programación puede
+corresponder a distintas ocurrencias de vuelos con resultados diferentes, por lo que los registros
+repetidos no pueden tratarse automáticamente como errores de captura. Eliminarlos alteraría la
+frecuencia observada de operación y la distribución de la variable objetivo.
+
+**Estructura temporal.** Aunque el conjunto no contiene una fecha explícita, el orden de las filas y
+los cambios consecutivos en `DayOfWeek` permitieron reconstruir 31 días. La tasa de retraso aumenta
+de 41,0% en el bloque inicial a 53,1% en el bloque final. Para respetar ese desplazamiento temporal,
+los datos se dividieron en entrenamiento, validación y prueba mediante bloques consecutivos, sin
+realizar una partición aleatoria.
+
+**Alcance y limitaciones.** El modelo utiliza únicamente información disponible durante la
+programación: aerolínea, aeropuerto de origen, aeropuerto de destino, día de la semana, hora de
+salida y duración prevista. Por ello, estima el riesgo de una franja recurrente de itinerario, no el
+estado en tiempo real de un vuelo específico ni la duración del posible retraso. Quedan fuera
+variables como clima, tráfico aéreo, estado de la aeronave, tripulación y condiciones operativas del
+día. En consecuencia, el resultado debe utilizarse para ordenar y priorizar itinerarios, no como
+garantía de que un vuelo específico se retrasará.
 
 ### Cambios respecto a la Entrega 2
+
+En la Entrega 2 se desarrollaron y compararon los modelos y se presentó un tablero monolítico. Para
+la entrega final, el modelo XGBoost seleccionado se convirtió en un paquete instalable y versionado;
+sus inferencias se publicaron mediante una API; el tablero se migró a React y se conectó a
+predicciones reales; y se incorporaron artefactos de Docker para desplegar la API y la interfaz como
+servicios independientes. También se añadieron pruebas automatizadas, documentación de endpoints y
+manuales de instalación y uso.
 
 | Tema | Entrega 2 | Entrega Final |
 |---|---|---|
 | **Modelo** | Artefacto `.joblib` suelto, no versionado | **Paquete instalable** `model_riesgo_retraso` (wheel) con el pipeline entrenado dentro |
 | **Servicio** | El tablero cargaba el modelo en su propio proceso | **API FastAPI** con siete endpoints documentados |
 | **Tablero** | Prototipo en Dash, monolítico | **Tablero React** que consume la API |
-| **Despliegue** | Ejecución local | **Docker Compose**: API y tablero como contenedores |
-| **Familias evaluadas** | Tres (logística, Random Forest, XGBoost) | Cuatro: se suma **LightGBM**, que corrobora el techo |
+| **Despliegue** | Ejecución local | **Docker Compose** local y **Terraform/ECS sobre EC2** en AWS |
+| **Familias evaluadas** | Tres (logística, Random Forest, XGBoost) | Se probó además **LightGBM** como comparación experimental; no se incorporó al producto final |
 | **Reproducibilidad** | Notebook | `tox run -e train` reentrena y `tox run -e test_package` valida |
 
 ---
@@ -133,6 +165,18 @@ equivalentes, pero XGBoost obtiene el mismo AUC en segundos donde Random Forest 
 | Regresión logística | 0,6857 | 0,7158 | 0,2236 | 0,15 MB | 7,7 s |
 | LightGBM | 0,6972 | — | — | — | 11 s |
 | *Mejor línea base* | *0,6763* | — | *0,2352* | — | — |
+
+La evaluación experimental de LightGBM fue desarrollada por Edisson David
+Prieto. En el registro consolidado disponible para esta comparación se
+reportaron ROC-AUC y tiempo de ajuste; los guiones indican métricas no
+reportadas, no valores iguales a cero. LightGBM se usó solo como contraste: no
+fue seleccionado, empaquetado ni incorporado a la API o al despliegue final.
+
+Una reproducción del entrenamiento del paquete en macOS obtuvo ROC-AUC 0,6972
+para XGBoost, una diferencia de 0,0002 frente al artefacto desplegado. Esta
+variación de último decimal no modifica la selección del modelo ni la compuerta
+de desempeño; la reproducibilidad esperada es funcional y métrica dentro de esa
+tolerancia, no identidad binaria entre plataformas.
 
 **Selección.** Random Forest y XGBoost quedaron separados por 0,0013 de AUC, diferencia dentro del
 ruido para un bloque de 107 mil filas, mientras que el artefacto de Random Forest pesa 7,4 veces más
@@ -251,6 +295,19 @@ que pydantic normaliza las URL agregando una barra final, mientras el navegador 
 `Origin` sin ella. Como la comparación es por igualdad exacta, el tablero quedaba sin datos aunque la
 API respondiera correctamente por `curl`. Hay dos pruebas de regresión que cubren ese caso.
 
+El PR #13 añadió el despliegue reproducible en AWS. Terraform crea repositorios
+ECR para API y tablero, un clúster ECS respaldado por una instancia EC2, dos
+servicios independientes, una IP elástica, reglas de red y grupos de logs en
+CloudWatch. El estado se conserva en un bucket S3 versionado y
+`infra/scripts/build_and_push.sh` automatiza la creación de infraestructura, la
+construcción y publicación de imágenes y el redespliegue de ambos servicios.
+
+La solución utiliza `LabRole` y `LabInstanceProfile` para ser compatible con AWS
+Academy. Es un despliegue académico de una sola instancia: no ofrece balanceo,
+TLS, autenticación, alta disponibilidad ni continuidad garantizada durante un
+redespliegue. Los puertos 80 y 8002 son públicos por defecto y deben
+restringirse fuera del laboratorio.
+
 ---
 
 ## 4. Principales resultados y conclusiones
@@ -259,11 +316,12 @@ API respondiera correctamente por `curl`. Hay dos pruebas de regresión que cubr
 de AUC sobre una tabla de frecuencias por aerolínea y franja. Es real y consistente, pero el techo lo
 impone la información disponible y no el algoritmo.
 
-**2. Cuatro familias independientes convergen al mismo techo.** Random Forest 0,6987, XGBoost 0,6974,
-LightGBM 0,6972 y regresión logística 0,6857, todas sobre el mismo bloque de prueba. Que una cuarta
-familia, implementada por separado, caiga dentro de 0,0015 de las anteriores es la evidencia más
-fuerte de que el límite está en los datos. El dataset perdió la marca temporal que vinculaba cada
-vuelo con el anterior de la misma aeronave, y con ella la variable más predictiva del problema.
+**2. Cuatro familias evaluadas convergen al mismo techo.** Random Forest 0,6987, XGBoost 0,6974,
+LightGBM 0,6972 y regresión logística 0,6857, todas sobre el mismo bloque de prueba. LightGBM se
+evaluó como experimento comparativo y no forma parte de la solución desplegada. Que esta cuarta
+familia, implementada por separado, caiga dentro de 0,0015 de las anteriores es evidencia de que el
+límite está en los datos. El dataset perdió la marca temporal que vinculaba cada vuelo con el
+anterior de la misma aeronave, y con ella la variable más predictiva del problema.
 
 **3. Cuando el desempeño empata, la decisión es de ingeniería.** XGBoost y Random Forest se separan
 por 0,0013 de AUC frente a un artefacto 7,4 veces más pesado y un ajuste 22 veces más lento.
@@ -333,10 +391,26 @@ indicadores de la selección activa.*
 *Figura A7. Módulo de evaluación: probabilidad, banda, punto de operación y comparación contra el
 histórico.*
 
-![Documentación de la API](images/e3_03_api_docs.png)
+![Repositorios de imágenes en ECR](images/e3_install_ecr_repositories.jpeg)
 
-*Figura A8. Documentación interactiva generada por FastAPI en `/docs`, con los siete endpoints.*
+*Figura A8. Repositorios ECR creados para las imágenes de la API y del tablero.*
 
-![Contenedores en ejecución](images/e3_04_docker.png)
+![Instancia EC2](images/e3_install_ec2_instance.jpeg)
 
-*Figura A9. Los dos servicios en ejecución con Docker Compose, ambos en estado saludable.*
+*Figura A9. Instancia EC2 que aporta capacidad al clúster ECS.*
+
+![Servicios ECS](images/e3_install_ecs_services.jpeg)
+
+*Figura A10. Servicios independientes de API y tablero administrados por ECS.*
+
+![Tablero desplegado](images/e3_install_dashboard_franjas.jpeg)
+
+*Figura A11. Vista de franjas a reforzar servida desde el despliegue en AWS.*
+
+![Predicción desplegada](images/e3_install_dashboard_prediction.jpeg)
+
+*Figura A12. Predicción individual consumiendo la API desplegada.*
+
+[Ver demostración en video del despliegue](media/e3_deployment_demo.mp4)
+
+*Evidencia audiovisual de la navegación por el sistema desplegado.*
