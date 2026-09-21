@@ -71,32 +71,6 @@ def test_schedule_slots_summary(client: TestClient) -> None:
     assert body["totalFlights"] == 4
 
 
-def test_schedule_slots_breakdown_by_airline(client: TestClient) -> None:
-    response = client.get(
-        "/api/v1/schedule-slots/breakdown", params={"by": "airline"}
-    )
-
-    assert response.status_code == 200
-    body = response.json()
-    assert {item["key"] for item in body} == {"AA", "WN"}
-
-
-def test_schedule_slots_breakdown_rejects_invalid_by(client: TestClient) -> None:
-    response = client.get(
-        "/api/v1/schedule-slots/breakdown", params={"by": "not-a-column"}
-    )
-
-    assert response.status_code == 422
-
-
-def test_schedule_slots_drift(client: TestClient) -> None:
-    response = client.get("/api/v1/schedule-slots/drift")
-
-    assert response.status_code == 200
-    body = response.json()
-    assert len(body) == 2
-
-
 def test_health_reporta_la_version_del_modelo(client: TestClient) -> None:
     """La version del modelo es distinta de la de la API y debe viajar aparte."""
     body = client.get("/api/v1/health").json()

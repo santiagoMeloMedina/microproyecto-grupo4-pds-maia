@@ -1,7 +1,7 @@
 from app.schemas.catalog import Catalog, DayOption
 from app.schemas.health import Health
 from app.schemas.predict import PredictionRequest, PredictionResult, ReferenceRate
-from app.schemas.slots import DriftPoint, ScheduleSlot, SlotsBreakdownItem, SlotsSummary
+from app.schemas.slots import ScheduleSlot, SlotsSummary
 
 __all__ = [
     "Catalog",
@@ -10,8 +10,6 @@ __all__ = [
     "PredictionRequest",
     "PredictionResult",
     "ReferenceRate",
-    "DriftPoint",
     "ScheduleSlot",
-    "SlotsBreakdownItem",
     "SlotsSummary",
 ]

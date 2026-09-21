@@ -28,15 +28,3 @@ class SlotsSummary(CamelModel):
     slots_in_selection: int
     roc_auc: Optional[float]
     threshold: float
-
-
-class SlotsBreakdownItem(CamelModel):
-    key: str
-    label: str
-    rate: float
-    flights: int
-
-
-class DriftPoint(CamelModel):
-    day: int
-    rate: float

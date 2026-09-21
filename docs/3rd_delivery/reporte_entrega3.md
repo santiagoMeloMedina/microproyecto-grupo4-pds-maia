@@ -82,7 +82,7 @@ manuales de instalación y uso.
 | Tema | Entrega 2 | Entrega Final |
 |---|---|---|
 | **Modelo** | Artefacto `.joblib` suelto, no versionado | **Paquete instalable** `model_riesgo_retraso` (wheel) con el pipeline entrenado dentro |
-| **Servicio** | El tablero cargaba el modelo en su propio proceso | **API FastAPI** con siete endpoints documentados |
+| **Servicio** | El tablero cargaba el modelo en su propio proceso | **API FastAPI** con cinco endpoints documentados |
 | **Tablero** | Prototipo en Dash, monolítico | **Tablero React** que consume la API |
 | **Despliegue** | Ejecución local | **Docker Compose** local y **Terraform/ECS sobre EC2** en AWS |
 | **Familias evaluadas** | Tres (logística, Random Forest, XGBoost) | Se probó además **LightGBM** como comparación experimental; no se incorporó al producto final |
@@ -242,7 +242,7 @@ corren como contenedores independientes.
 ### 3.2 La API
 
 FastAPI sobre uvicorn, con la estructura del taller 6: configuración en `config.py`, esquemas
-Pydantic separados por recurso y enrutador en `api.py`. Expone siete endpoints bajo `/api/v1`:
+Pydantic separados por recurso y enrutador en `api.py`. Expone cinco endpoints bajo `/api/v1`:
 
 | Endpoint | Qué entrega |
 |---|---|
@@ -251,10 +251,8 @@ Pydantic separados por recurso y enrutador en `api.py`. Expone siete endpoints b
 | `POST /predict` | Probabilidad, banda y comparación con las tasas históricas de referencia |
 | `GET /schedule-slots` | Franjas ordenadas por riesgo estimado, con cuatro filtros combinables |
 | `GET /schedule-slots/summary` | Indicadores de la selección activa |
-| `GET /schedule-slots/breakdown` | Tasa agrupada por aerolínea, franja o día, con volumen |
-| `GET /schedule-slots/drift` | Evolución diaria de la tasa en la selección |
 
-La documentación interactiva se genera sola en `/docs`. Doce pruebas cubren los endpoints, la
+La documentación interactiva se genera sola en `/docs`. Nueve pruebas cubren los endpoints, la
 validación de entradas y la configuración de CORS, y corren con `tox run -e test_app` contra el mismo
 wheel que se despliega.
 
