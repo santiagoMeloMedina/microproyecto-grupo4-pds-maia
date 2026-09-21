@@ -1,11 +1,12 @@
 # API de riesgo de retraso
 
-FastAPI que disponibiliza, como endpoints REST, el modelo y la analítica que hoy vive en
-[`dashboard/app.py`](../dashboard/app.py) (tablero Dash). Sirve al tablero React en
-[`ui/`](../ui/), que consume `/predict` desde `ui/src/services/predictionService.ts`.
+FastAPI que sirve el modelo empaquetado y la analítica histórica mediante
+endpoints REST. Es el backend del tablero React en [`ui/`](../ui/), que consume
+la predicción y los endpoints de priorización. El tablero Dash de
+[`dashboard/app.py`](../dashboard/app.py) se conserva como antecedente de la
+Entrega 2.
 
-Estructura (basada en [`bankchurn-api/`](../bankchurn-api/), adaptada a este proyecto y a
-pydantic v2):
+Estructura adaptada a este proyecto y a pydantic v2:
 
 ```
 api/
@@ -29,8 +30,14 @@ Es lo que permite construir la imagen desde un clon limpio: antes la API deseria
 para que el pickle encontrara `airlines_ml`, de modo que dependía de archivos que no estaban en
 git y de la estructura del repositorio.
 
-Para regenerar el wheel, ver [model-pkg/README.md](../model-pkg/README.md). Para regenerar el
-parquet, `python scripts/generar_datos_tablero.py` desde la raíz.
+Para regenerar el wheel, ver [model-pkg/README.md](../model-pkg/README.md). Para
+regenerar el parquet, instalar el wheel recién construido y un motor parquet, y
+ejecutar el script desde la raíz:
+
+```bash
+python -m pip install --force-reinstall model-pkg/dist/*.whl pyarrow
+python scripts/generar_datos_tablero.py
+```
 
 ## Levantar la API
 
@@ -53,7 +60,8 @@ tox run -e test_app
 ## Levantar la API con Docker
 
 El contexto de build es la raíz del repositorio, no `api/`, porque la imagen necesita también
-`dashboard/data/vuelos.parquet`.
+`dashboard/data/vuelos.parquet`. Este archivo está versionado y debe existir en
+esa ruta; no se debe excluir ni ejecutar el build desde la carpeta `api/`.
 
 ```bash
 docker build -f api/Dockerfile -t airlines-api .

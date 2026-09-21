@@ -1,8 +1,10 @@
 # Manual de instalación
 
 Instalación y despliegue del tablero de riesgo de retraso y de la API que lo
-alimenta. La vía recomendada es Docker Compose: levanta todo con un comando y no
-exige instalar Python ni Node en la máquina.
+alimenta. Para una validación local, Docker Compose levanta todo con un comando.
+Para reproducir el despliegue de la entrega en AWS, la infraestructura como
+código de `infra/` crea repositorios ECR y servicios ECS sobre una instancia
+EC2 con IP elástica.
 
 ---
 
@@ -13,6 +15,14 @@ exige instalar Python ni Node en la máquina.
 | Docker Engine | 24 o superior | Despliegue con contenedores (vía recomendada) |
 | Docker Compose | v2 o superior | Orquestación de los dos servicios |
 | Git | cualquiera | Clonar el repositorio |
+
+Para desplegar en AWS también se requiere:
+
+| Componente | Versión | Para qué |
+|---|---|---|
+| Terraform | 1.5 o superior | Crear y actualizar la infraestructura |
+| AWS CLI | 2 o superior | Autenticación, ECR y actualización de ECS |
+| Cuenta o laboratorio AWS | con permisos suficientes | EC2, ECS, ECR, S3, CloudWatch y red |
 
 Solo si se va a instalar sin Docker, o reentrenar el modelo:
 
@@ -38,7 +48,7 @@ reentrenar desde cero.
 
 ---
 
-## 3. Despliegue con Docker Compose (recomendado)
+## 3. Despliegue local con Docker Compose
 
 ```bash
 docker compose up --build
@@ -82,13 +92,138 @@ $env:UI_PORT = "8088"; docker compose up --build
 
 ---
 
-## 4. Despliegue en una instancia EC2
+## 4. Despliegue reproducible en AWS con Terraform y ECS
+
+Este es el procedimiento implementado en el PR #13. Terraform crea dos
+repositorios ECR, un clúster ECS sobre una instancia EC2, dos servicios ECS, una
+IP elástica, el grupo de seguridad y los grupos de logs en CloudWatch. El script
+de despliegue construye y publica las imágenes de la API y del tablero y fuerza
+la actualización de ambos servicios.
+
+> **Alcance:** es una arquitectura académica de una sola instancia, sin
+> balanceador, TLS, autenticación ni alta disponibilidad. Durante un
+> redespliegue puede existir una interrupción breve.
+
+### 4.1 Configurar AWS
+
+1. Iniciar el laboratorio o la cuenta AWS y configurar credenciales válidas para
+   AWS CLI. En AWS Academy deben renovarse cuando se reinicie la sesión:
+
+   ```bash
+   aws sts get-caller-identity
+   ```
+
+2. Identificar una VPC y una subred pública con ruta a un Internet Gateway.
+
+3. Preparar las variables del despliegue:
+
+   ```bash
+   cd infra
+   cp .env.example .env
+   ```
+
+   Editar `.env` y reemplazar `VPC_ID` y `SUBNET_ID`. El script genera un bucket
+   S3 versionado para el estado de Terraform si `TF_STATE_BUCKET` no está
+   definido, y guarda su nombre en este archivo local.
+
+### 4.2 Crear la infraestructura y publicar las imágenes
+
+Desde la raíz del repositorio:
+
+```bash
+./infra/scripts/build_and_push.sh
+```
+
+El proceso ejecuta `terraform init` y `terraform apply`, autentica Docker en ECR,
+construye las imágenes para `linux/amd64`, las publica con la etiqueta `latest`
+y fuerza un nuevo despliegue de los servicios. La URL pública de la API se
+incorpora al tablero durante su construcción. Vite congela esta URL dentro del
+bundle compilado: cambiarla exige reconstruir y publicar la imagen del tablero;
+no basta con reiniciar el contenedor.
+
+> El script acepta una etiqueta opcional, pero las tareas ECS del PR #13
+> referencian `latest`. Para reproducir el despliegue sin modificar la
+> infraestructura, se debe ejecutar sin argumento.
+
+![Repositorios ECR](images/e3_install_ecr_repositories.jpeg)
+
+*Repositorios ECR creados para almacenar las imágenes de la API y del tablero.*
+
+![Instancia EC2 del clúster](images/e3_install_ec2_instance.jpeg)
+
+*Instancia EC2 registrada como capacidad del clúster ECS.*
+
+![Servicios ECS](images/e3_install_ecs_services.jpeg)
+
+*Servicios de API y tablero administrados por ECS.*
+
+### 4.3 Verificar el despliegue
+
+```bash
+terraform -chdir=infra output ui_url
+terraform -chdir=infra output api_url
+```
+
+Abrir la URL del tablero y comprobar la API con:
+
+```bash
+API_URL="$(terraform -chdir=infra output -raw api_url)"
+curl "$API_URL/api/v1/health"
+```
+
+![Tablero desplegado: franjas](images/e3_install_dashboard_franjas.jpeg)
+
+*Vista de franjas a reforzar servida desde la infraestructura AWS.*
+
+![Tablero desplegado: predicción](images/e3_install_dashboard_prediction.jpeg)
+
+*Vista de predicción individual conectada con la API desplegada.*
+
+[Ver demostración en video del despliegue](media/e3_deployment_demo.mp4)
+
+El archivo MP4 permite comprobar la navegación del sistema desplegado. GitHub
+lo presenta como un recurso descargable o reproducible según el navegador.
+
+### 4.4 Seguridad, costos y limpieza
+
+Los puertos 80 y 8002 se abren por defecto a `0.0.0.0/0`. Esto es aceptable solo
+para el laboratorio académico. En otro entorno se debe restringir
+`public_ingress_cidr` en `terraform.tfvars` y añadir TLS y autenticación.
+
+Para evitar costos al terminar, ejecutar desde la raíz del repositorio:
+
+```bash
+set -a
+source infra/.env
+set +a
+export TF_VAR_aws_region="${AWS_REGION:-us-east-1}"
+export TF_VAR_project_name="${PROJECT_NAME:-airlines-delay}"
+
+# Reabre el backend correcto incluso desde un clon nuevo o si se eliminó .terraform/.
+terraform -chdir=infra init -input=false -reconfigure \
+   -backend-config="bucket=$TF_STATE_BUCKET" \
+   -backend-config="key=${TF_STATE_PREFIX:-${PROJECT_NAME:-airlines-delay}}/terraform.tfstate" \
+   -backend-config="region=${AWS_REGION:-us-east-1}"
+
+terraform -chdir=infra destroy \
+   -var="vpc_id=$VPC_ID" \
+   -var="subnet_id=$SUBNET_ID"
+```
+
+El bucket S3 que conserva el estado se administra fuera de Terraform. Después
+de confirmar la destrucción, puede vaciarse y eliminarse manualmente si ya no se
+utilizará.
+
+---
+
+## 5. Despliegue manual alternativo en una instancia EC2
 
 1. Lanzar una instancia con Ubuntu 24.04. Se recomienda **t3.small** o superior
    con 20 GB de disco; la API carga el modelo y el histórico en memoria.
 
-2. Abrir en el grupo de seguridad los puertos **8002** (API) y **8080** (tablero),
-   con origen *Anywhere IPv4*.
+2. Abrir en el grupo de seguridad los puertos **8002** (API) y **8080** (tablero).
+   Para una prueba académica temporal puede usarse *Anywhere IPv4*; fuera del
+   laboratorio se deben restringir a las direcciones consumidoras.
 
 3. Conectarse e instalar Docker:
 
@@ -102,19 +237,27 @@ $env:UI_PORT = "8088"; docker compose up --build
    ```
 
 4. Clonar y levantar, indicando la IP pública para que el tablero sepa dónde
-   está la API:
+   está la API. Antes de levantar, editar `docker-compose.yml` y reemplazar el
+   valor completo de `BACKEND_CORS_ORIGINS` por
+   `'["http://IP_PUBLICA:8080"]'`. Si se elige otro `UI_PORT`, se debe usar ese
+   mismo puerto en el origen permitido. `PUBLIC_HOST` configura la URL que usa
+   el tablero, pero no amplía por sí solo los orígenes aceptados por la API:
 
    ```bash
    git clone https://github.com/santiagoMeloMedina/microproyecto-grupo4-pds-maia.git
    cd microproyecto-grupo4-pds-maia
 
+   nano docker-compose.yml
+   # En services.api.environment, dejar:
+   # BACKEND_CORS_ORIGINS: '["http://IP_PUBLICA:8080"]'
+
    PUBLIC_HOST=http://IP_PUBLICA:8002 docker compose up --build -d
    ```
 
-   `PUBLIC_HOST` es obligatorio en un despliegue remoto. Vite congela esa URL
-   dentro del bundle durante la construcción, así que un tablero compilado
-   apuntando a `localhost` seguirá buscando la API en la máquina del visitante y
-   no en el servidor.
+   `PUBLIC_HOST` y el origen público en `BACKEND_CORS_ORIGINS` son obligatorios
+   en este despliegue alternativo. Vite congela la URL de la API dentro del
+   bundle durante la construcción y el navegador exige que su origen esté
+   permitido por CORS.
 
 5. Verificar:
 
@@ -126,7 +269,7 @@ $env:UI_PORT = "8088"; docker compose up --build
 
 ---
 
-## 5. Instalación local sin Docker
+## 6. Instalación local sin Docker
 
 Útil para desarrollar. Requiere dos terminales.
 
@@ -155,19 +298,26 @@ por defecto.
 
 ---
 
-## 6. Reentrenar el modelo
+## 7. Reentrenar el modelo
 
 Solo si se quiere regenerar el artefacto. Requiere el CSV original.
 
 ```bash
 dvc pull                    # descarga data/airlines.csv (19 MB)
+python -m pip install tox build pyarrow
 
 cd model-pkg
 tox run -e test_package     # entrena y corre las pruebas
 python -m build             # genera dist/*.whl
 
 cp dist/model_riesgo_retraso-0.0.1-py3-none-any.whl ../api/model-package/
+cd ..
+python -m pip install --force-reinstall model-pkg/dist/*.whl
 ```
+
+El nombre `0.0.1` debe coincidir con la versión declarada por el paquete y con
+la ruta fijada en `api/requirements.txt`. Si se incrementa la versión, se deben
+actualizar ambos nombres antes de reconstruir la imagen de la API.
 
 El entrenamiento toma alrededor de un minuto en CPU. Para usar GPU en Colab,
 exportar `XGBOOST_DEVICE=cuda`; acelera el ajuste pero no cambia el resultado.
@@ -180,19 +330,22 @@ python scripts/generar_datos_tablero.py
 
 ---
 
-## 7. Verificar la instalación
+## 8. Verificar la instalación
 
 ```bash
-cd api    && tox run -e test_app        # 12 pruebas de la API
-cd model-pkg && tox run -e test_package # 7 pruebas del modelo
+(cd api && tox run -e test_app)             # pruebas de la API
+(cd model-pkg && tox run -e test_package)   # pruebas del modelo
 ```
 
 Las pruebas del paquete incluyen una compuerta de desempeño: fallan si el
-ROC-AUC del modelo cae por debajo de la línea base del proyecto (0,6763).
+ROC-AUC del modelo cae por debajo de la línea base del proyecto (0,6763). El
+valor puede variar en las últimas cifras decimales entre plataformas; en la
+reproducción documentada se obtuvo 0,6972 frente al 0,6974 registrado por el
+artefacto desplegado.
 
 ---
 
-## 8. Problemas frecuentes
+## 9. Problemas frecuentes
 
 | Síntoma | Causa | Solución |
 |---|---|---|
@@ -203,3 +356,5 @@ ROC-AUC del modelo cae por debajo de la línea base del proyecto (0,6763).
 | `No se encontro .../data/airlines.csv` | Solo ocurre al reentrenar | `dvc pull`, o definir `AIRLINES_CSV` |
 | Recargar `/franjas` da 404 | Falta el `try_files` de nginx | Ya resuelto en `ui/nginx.conf`; ocurre si se sirve `dist/` con otro servidor |
 | La primera consulta tarda varios segundos | La API puntúa las 92.250 franjas al arrancar | Es esperado y ocurre una sola vez por proceso |
+| AWS CLI devuelve credenciales vencidas | Terminó la sesión de AWS Academy | Reiniciar el laboratorio y volver a configurar las credenciales |
+| ECS no inicia las tareas | La imagen aún no existe en ECR o la instancia no tiene memoria | Ejecutar de nuevo `build_and_push.sh` y revisar los logs en CloudWatch |
