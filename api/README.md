@@ -97,8 +97,6 @@ Prefijo `/api/v1`. Todas las respuestas usan camelCase (pensado para consumirse 
 | POST | `/predict` | Riesgo estimado para un itinerario (`airline`, `airportFrom`, `airportTo`, `dayOfWeek`, `time`, `length`), con tasas históricas de referencia. Equivalente al callback `evaluar` de `dashboard/app.py`. |
 | GET | `/schedule-slots` | Franjas de itinerario (aerolínea × ruta × día × franja horaria) ordenadas por riesgo, con los mismos cuatro filtros del tablero Dash (`airline`, `route`, `dayOfWeek`, `slot`). |
 | GET | `/schedule-slots/summary` | KPIs de la selección activa: tasa de retraso, vuelos, franjas y AUC del modelo. |
-| GET | `/schedule-slots/breakdown` | Tasa de retraso agrupada por `by=airline\|slot\|day`, con volumen. |
-| GET | `/schedule-slots/drift` | Evolución diaria de la tasa de retraso en la selección (deriva del modelo). |
 
 `POST /predict` rechaza con `422` si `airportFrom == airportTo`. Los demás filtros son opcionales;
 sin filtros, se calculan sobre todo el histórico.
@@ -110,5 +108,4 @@ sin filtros, se calculan sobre todo el histórico.
 
 Las tres vistas descriptivas (`operational_prioritization`, `strategic_overview`,
 `tactical_diagnosis`, en `ui/public/widgets/`) siguen siendo HTML estático generado por
-`dashboard/descriptive/generate_all.py`: no las sirve esta API. `/schedule-slots/breakdown` y
-`/schedule-slots/drift` están disponibles y probados, pero todavía sin vista propia en el tablero.
+`dashboard/descriptive/generate_all.py`: no las sirve esta API.
